@@ -90,7 +90,7 @@ class SensorListAdapter extends BaseAdapter {
         else
             viewHolder.deviceName.setText(R.string.unknown_sensor);
         viewHolder.deviceAddress.setText(sensor.getAddress());
-        viewHolder.deviceAddress.setText(sensor.getRssi());
+        viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()));
         return view;
 
     }
