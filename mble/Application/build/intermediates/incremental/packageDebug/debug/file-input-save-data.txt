@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Tue Jul 03 10:52:51 CST 2018
+0.baseType=DIRECTORY
+0.base=D\:\\techweek2018\\wildCode\\mble\\Application\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+0.path=classes.dex
+0.set=DEX
+count=1
