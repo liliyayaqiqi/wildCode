@@ -16,15 +16,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{
     private static final int REQUEST_ENABLE_BT = 1;
@@ -36,91 +29,20 @@ public class MainActivity extends AppCompatActivity{
     private boolean isScanning = false;
     private Handler handler;
     private Runnable runnable;
-    // Adapter for holding devices found through scanning.
-    // TODO: move to its own class
-    private class LeDeviceListAdapter extends BaseAdapter {
-        private ArrayList<BluetoothDevice> mLeDevices;
-        private LayoutInflater mInflator;
 
-        public LeDeviceListAdapter() {
-            super();
-            mLeDevices = new ArrayList<BluetoothDevice>();
-            mInflator = MainActivity.this.getLayoutInflater();
-        }
-
-        public void addDevice(BluetoothDevice device) {
-            if(!mLeDevices.contains(device)) {
-                mLeDevices.add(device);
-            }
-        }
-
-        public BluetoothDevice getDevice(int position) {
-            return mLeDevices.get(position);
-        }
-
-        public void clear() {
-            mLeDevices.clear();
-        }
-
-        @Override
-        public int getCount() {
-            return mLeDevices.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return mLeDevices.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            class ViewHolder {
-                TextView deviceName;
-                TextView deviceAddress;
-            }
-
-            ViewHolder viewHolder;
-            // General ListView optimization code.
-            if (view == null) {
-                view = mInflator.inflate(R.layout.sensor, null);
-                viewHolder = new ViewHolder();
-                viewHolder.deviceAddress = view.findViewById(R.id.device_address);
-                viewHolder.deviceName = view.findViewById(R.id.device_name);
-                view.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) view.getTag();
-            }
-
-            BluetoothDevice device = mLeDevices.get(i);
-            final String deviceName = device.getName();
-            if (deviceName != null && deviceName.length() > 0)
-                viewHolder.deviceName.setText(deviceName);
-            else
-                viewHolder.deviceName.setText(R.string.unknown_sensor);
-            viewHolder.deviceAddress.setText(device.getAddress());
-
-            return view;
-
-        }
-    }
-
-    private LeDeviceListAdapter leDeviceListAdapter;
+    private SensorListAdapter sensorListAdapter;
     // Device scan callback.
     private BluetoothAdapter.LeScanCallback leScanCallback =
             new BluetoothAdapter.LeScanCallback() {
 
                 @Override
-                public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+                public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            leDeviceListAdapter.addDevice(device);
-                            leDeviceListAdapter.notifyDataSetChanged();
+                            Sensor sensor = new Sensor(device, rssi);
+                            sensorListAdapter.addDevice(sensor);
+                            sensorListAdapter.notifyDataSetChanged();
                         }
                     });
                 }
@@ -168,8 +90,8 @@ public class MainActivity extends AppCompatActivity{
 
         tryGainPermissions();
 
-        leDeviceListAdapter = new LeDeviceListAdapter();
-        sensorsListView.setAdapter(leDeviceListAdapter);
+        sensorListAdapter = new SensorListAdapter(this);
+        sensorsListView.setAdapter(sensorListAdapter);
 
     }
 
