@@ -115,6 +115,14 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isScanning) {
+            stopScan();
+        }
+    }
+
     private void tryGainPermissions() {
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
@@ -159,16 +167,15 @@ public class MainActivity extends AppCompatActivity{
 
     private void toggleScan() {
         if (isScanning) {
-            isScanning = false;
             stopScan();
         } else
         {
-            isScanning = true;
             startScan();
         }
     }
 
     private void stopScan() {
+        isScanning = false;
         handler.removeCallbacks(runnable);
         bluetoothAdapter.stopLeScan(leScanCallback);
         swipeRefreshLayout.setRefreshing(false);
@@ -179,11 +186,11 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void run() {
                 if (isScanning) {
-                    isScanning = false;
                     stopScan();
                 }
             }
         };
+        isScanning = true;
         handler.postDelayed(runnable, 10000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
     }
