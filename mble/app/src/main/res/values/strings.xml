@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Bluetooth Sensor Monitoring</string>
+    <string name="app_name">NI BLE Sensors</string>
     <string name="ble_not_supported">Bluetooth LE is not supported on this Device.</string>
     <string name="unknown_sensor">Unknow Sesnor</string>
+    <string name="menu_settings">Settings</string>
 </resources>
