@@ -6,8 +6,9 @@
     android:id="@+id/swipeRefreshLayout"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
     <ListView
-        android:id="@android:id/list"
+        android:id="@+id/sensors"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </android.support.v4.widget.SwipeRefreshLayout>
