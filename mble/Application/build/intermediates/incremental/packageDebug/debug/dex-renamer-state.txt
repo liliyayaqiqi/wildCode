@@ -1,4 +1,0 @@
-#Tue Jul 03 10:52:51 CST 2018
-base.0=D\:\\techweek2018\\wildCode\\mble\\Application\\build\\intermediates\\transforms\\dexMerger\\debug\\0
-path.0=classes.dex
-renamed.0=classes.dex

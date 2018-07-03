@@ -277,8 +277,6 @@
     <style name="TextAppearance.Compat.Notification.Title.Media">
         <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
-    <style name="Theme.Base" parent="android:Theme.Material.Light">
-    </style>
     <style name="Widget.Compat.NotificationActionContainer" parent="">
         <item name="android:background">@drawable/notification_action_background</item>
     </style>

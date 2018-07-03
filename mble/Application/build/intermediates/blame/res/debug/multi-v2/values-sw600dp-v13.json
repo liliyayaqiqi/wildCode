@@ -4,42 +4,6 @@
             "outputFile": "D:\\techweek2018\\wildCode\\mble\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-sw600dp-v13\\values-sw600dp-v13.xml",
             "map": [
                 {
-                    "source": "D:\\techweek2018\\wildCode\\mble\\Application\\src\\main\\res\\values-sw600dp\\template-dimens.xml",
-                    "from": {
-                        "startLines": "20,21",
-                        "startColumns": "4,4",
-                        "startOffsets": "676,745",
-                        "endColumns": "67,67",
-                        "endOffsets": "739,808"
-                    },
-                    "to": {
-                        "startLines": "10,11",
-                        "startColumns": "4,4",
-                        "startOffsets": "611,679",
-                        "endColumns": "67,67",
-                        "endOffsets": "674,742"
-                    }
-                },
-                {
-                    "source": "D:\\techweek2018\\wildCode\\mble\\Application\\src\\main\\res\\values-sw600dp\\template-styles.xml",
-                    "from": {
-                        "startLines": "18",
-                        "startColumns": "4",
-                        "startOffsets": "639",
-                        "endLines": "22",
-                        "endColumns": "12",
-                        "endOffsets": "883"
-                    },
-                    "to": {
-                        "startLines": "12",
-                        "startColumns": "4",
-                        "startOffsets": "747",
-                        "endLines": "16",
-                        "endColumns": "12",
-                        "endOffsets": "987"
-                    }
-                },
-                {
                     "source": "C:\\Users\\yaqli\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.0.2.aar\\ad2ec2243388afab018f0d8a9de1f6bc\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
