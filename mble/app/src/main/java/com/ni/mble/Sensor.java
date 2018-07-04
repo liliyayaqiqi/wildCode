@@ -8,7 +8,6 @@ class Sensor {
     private String mName;
     private String mAddress;
     private String mSn;
-    private boolean mIsRequestingSn;
 
     public Sensor(final BluetoothDevice device, int rssi) {
         mDevice = device;
@@ -16,7 +15,6 @@ class Sensor {
         mName = device.getName();
         mAddress = device.getAddress();
         mSn = null;
-        mIsRequestingSn = false;
     }
 
     public Sensor(String name, String address, String Sn) {
@@ -25,7 +23,6 @@ class Sensor {
         mName = name;
         mAddress = address;
         mSn = Sn;
-        mIsRequestingSn = false;
     }
 
     public String getName() {
@@ -33,10 +30,6 @@ class Sensor {
     }
 
     public int getRssi() {
-        if(mSn == null)
-        {
-            mIsRequestingSn = true;
-        }
         return mRssi;
     }
 
@@ -46,10 +39,7 @@ class Sensor {
 
     public String getSn() { return mSn; }
 
-    public boolean isRequestingSn() { return mIsRequestingSn; }
-
     public void setSn(String Sn) {
-        mIsRequestingSn = false;
         mSn = Sn;
     }
 
