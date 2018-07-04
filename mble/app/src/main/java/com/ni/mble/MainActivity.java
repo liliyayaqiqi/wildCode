@@ -38,13 +38,15 @@ public class MainActivity extends AppCompatActivity{
             new BluetoothAdapter.LeScanCallback() {
 
                 @Override
-                public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
+                public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Sensor sensor = new Sensor(device, rssi);
-                            sensorListAdapter.addDevice(sensor);
-                            sensorListAdapter.notifyDataSetChanged();
+                            if(Sensor.isDeviceOfInterest(scanRecord)) {
+                                Sensor sensor = new Sensor(device, rssi);
+                                sensorListAdapter.addSensor(sensor);
+                                sensorListAdapter.notifyDataSetChanged();
+                            }
                         }
                     });
                 }
