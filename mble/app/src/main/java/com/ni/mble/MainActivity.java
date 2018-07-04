@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity{
                     device_name = "Unknown Sensor";
                 }
                 Sensor sensor = new Sensor(device_name, mac_addr, serial_num);
-                sensorListAdapter.addDevice(sensor);
+                sensorListAdapter.addSensor(sensor);
                 sensorListAdapter.notifyDataSetChanged();
             }
             else

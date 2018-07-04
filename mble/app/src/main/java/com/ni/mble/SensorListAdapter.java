@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import android.graphics.drawable.GradientDrawable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,7 +96,26 @@ class SensorListAdapter extends BaseAdapter {
         viewHolder.deviceAddress.setText(sensor.getAddress());
         viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()));
         viewHolder.deviceSn.setText(sensor.getSn());
-        return view;
 
+        int rssi = sensor.getRssi();
+
+        if(rssi >= -81){
+            int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0x9f22bb55 };
+            GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
+            view.setBackground(gd);
+        }
+        else if (rssi >= -90){
+            int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0x9fbbbb22 };
+            GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
+            view.setBackground(gd);
+        }
+        else{
+            int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0xffbb2222 };
+            GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
+            view.setBackground(gd);
+        }
+
+
+        return view;
     }
 }
