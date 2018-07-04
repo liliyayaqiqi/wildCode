@@ -18,6 +18,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
+
 
 public class MainActivity extends AppCompatActivity{
     private static final int REQUEST_ENABLE_BT = 1;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity{
     private boolean isScanning = false;
     private Handler handler;
     private Runnable runnable;
+
+    private SharedPreferences mSharedPref;
 
     private SensorListAdapter sensorListAdapter;
     // Device scan callback.
@@ -75,6 +79,27 @@ public class MainActivity extends AppCompatActivity{
             finish();
             return;
         }
+
+        SharedPreferences shareData = getSharedPreferences("devices", 0);
+        int i = 0;
+        while(true)
+        {
+            String data = shareData.getString(String.valueOf(i), "Null");
+            if (data != "Null")
+            {
+                String serial_num = data.substring(0, 8);
+                String mac_addr = data.substring(8, 20);
+                String device_name = data.substring(20);
+                Sensor sensor = new Sensor();
+            }
+            else
+            {
+                break;
+            }
+            ++i;
+        }
+
+
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
