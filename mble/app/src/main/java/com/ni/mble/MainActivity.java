@@ -16,6 +16,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -85,6 +87,24 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                Intent intent = new Intent(this, SettingsActivity.class){};
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -93,6 +113,14 @@ public class MainActivity extends AppCompatActivity{
         sensorListAdapter = new SensorListAdapter(this);
         sensorsListView.setAdapter(sensorListAdapter);
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isScanning) {
+            stopScan();
+        }
     }
 
     private void tryGainPermissions() {
@@ -139,16 +167,15 @@ public class MainActivity extends AppCompatActivity{
 
     private void toggleScan() {
         if (isScanning) {
-            isScanning = false;
             stopScan();
         } else
         {
-            isScanning = true;
             startScan();
         }
     }
 
     private void stopScan() {
+        isScanning = false;
         handler.removeCallbacks(runnable);
         bluetoothAdapter.stopLeScan(leScanCallback);
         swipeRefreshLayout.setRefreshing(false);
@@ -159,11 +186,11 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void run() {
                 if (isScanning) {
-                    isScanning = false;
                     stopScan();
                 }
             }
         };
+        isScanning = true;
         handler.postDelayed(runnable, 10000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
     }
