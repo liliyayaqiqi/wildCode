@@ -5,23 +5,29 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity{
+    private final static String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_LOCATION_PERMISSIONS = 2;
 
@@ -31,8 +37,61 @@ public class MainActivity extends AppCompatActivity{
     private boolean isScanning = false;
     private Handler handler;
     private Runnable runnable;
-
+    private BleService bleService;
     private SensorListAdapter sensorListAdapter;
+
+    private class GattUpdateReceiver implements BroadcastReceiver {
+        private SensorListAdapter sensorList;
+        public GattUpdateReceiver(MainActivity activity) {
+            mActivity = activity;
+        }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if(BleService.ACTION_GATT_CONNECTED.equals(action)) {
+                Log.v(TAG,"Connection established");
+            } else if (BleService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+                Log.v(TAG,"Services discovered");
+                String address = intent.getStringExtra(BleService.SENSOR_ADDRESS);
+            } else if (BleService.ACTION_GATT_SN_READ.equals(action)) {
+                Log.v(TAG,"SN is read");
+            }
+        }
+    }
+
+    private final BroadcastReceiver gattUpateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if(BleService.ACTION_GATT_CONNECTED.equals(action)) {
+                Log.v(TAG,"Connection established");
+            } else if (BleService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+                Log.v(TAG,"Services discovered");
+                String address = intent.getStringExtra(BleService.SENSOR_ADDRESS);
+            } else if (BleService.ACTION_GATT_SN_READ.equals(action)) {
+                Log.v(TAG,"SN is read");
+            }
+        }
+    };
+
+    // Code to manage Service lifecycle.
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            bleService = ((BleService.LocalBinder) service).getService();
+            if (!bleService.initialize()) {
+                Log.e(TAG, "Unable to initialize Bluetooth");
+                finish();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            bleService = null;
+        }
+    };
+
     // Device scan callback.
     private BluetoothAdapter.LeScanCallback leScanCallback =
             new BluetoothAdapter.LeScanCallback() {
@@ -194,4 +253,6 @@ public class MainActivity extends AppCompatActivity{
         handler.postDelayed(runnable, 10000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
     }
+
+    private void read
 }

@@ -38,8 +38,8 @@ class SensorListAdapter extends BaseAdapter {
         }
     }
 
-    public BluetoothDevice getDevice(int position) {
-        return mViewData.get(position).getDevice();
+    public Map<String, Sensor> getSensors() {
+        return mSensors;
     }
 
     public void clear() {
