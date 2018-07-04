@@ -137,6 +137,9 @@ public class MainActivity extends AppCompatActivity{
                 Intent intent = new Intent(this, SettingsActivity.class){};
                 startActivity(intent);
                 return true;
+            case R.id.menu_delete_all:
+                sensorListAdapter.clear();
+                sensorListAdapter.notifyDataSetChanged();
             default:
                 return super.onOptionsItemSelected(item);
         }
