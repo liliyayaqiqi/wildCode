@@ -7,6 +7,11 @@
         android:title="@string/pref_rssi" />
 
     <header
+        android:fragment="com.ni.mble.SettingsActivity$PeriodPreferenceFragment"
+        android:icon="@drawable/ic_period_black_24dp"
+        android:title="@string/pref_period" />
+
+    <header
         android:fragment="com.ni.mble.SettingsActivity$AboutPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_about" />

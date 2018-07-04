@@ -7,10 +7,12 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity{
     private boolean isScanning = false;
     private Handler handler;
     private Runnable runnable;
+    private int scanPeriod;
 
     private SensorListAdapter sensorListAdapter;
     // Device scan callback.
@@ -56,6 +59,10 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
         setContentView(R.layout.activity_main);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        scanPeriod = Integer.parseInt(prefs.getString("scan_period", null));
+
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
         sensorsListView = findViewById(R.id.sensors);
@@ -109,6 +116,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        scanPeriod = Integer.parseInt(prefs.getString("scan_period", null));
 
         tryGainPermissions();
 
@@ -193,7 +203,7 @@ public class MainActivity extends AppCompatActivity{
             }
         };
         isScanning = true;
-        handler.postDelayed(runnable, 10000); // TODO: Need to be configured;
+        handler.postDelayed(runnable, scanPeriod * 1000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
     }
 }

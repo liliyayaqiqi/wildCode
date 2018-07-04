@@ -20,5 +20,8 @@
     <string name="default_yellow_rssi">-100</string>
     <string name="pref_yellow_rssi_title">Minimun Yellow RSSI (&lt; 0 dBm)</string>
     <string name="toast_wrong_rssi">RSSI must be negative value!</string>
+    <string name="pref_period">Period</string>
+    <string name="pref_scan_period">Scan Period (s)</string>
+    <string name="default_scan_period">5</string>
 
 </resources>
