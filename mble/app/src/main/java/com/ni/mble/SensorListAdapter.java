@@ -29,7 +29,7 @@ class SensorListAdapter extends BaseAdapter {
 
     public void addSensor(Sensor sensor) {
         if(!mSensors.containsKey(sensor.getAddress())) {
-            sensor.setSn("11-22-33-44");
+            //sensor.setSn("11-22-33-44");
             mSensors.put(sensor.getAddress(), sensor);
             mViewData.add(sensor);
         }
@@ -39,8 +39,8 @@ class SensorListAdapter extends BaseAdapter {
         }
     }
 
-    public BluetoothDevice getDevice(int position) {
-        return mViewData.get(position).getDevice();
+    public Map<String, Sensor> getSensors() {
+        return mSensors;
     }
 
     public void clear() {
@@ -68,6 +68,7 @@ class SensorListAdapter extends BaseAdapter {
         class ViewHolder {
             TextView deviceName;
             TextView deviceAddress;
+            TextView deviceSn;
             TextView deviceRssi;
         }
 
@@ -79,6 +80,7 @@ class SensorListAdapter extends BaseAdapter {
             viewHolder.deviceAddress = view.findViewById(R.id.device_address);
             viewHolder.deviceName = view.findViewById(R.id.device_name);
             viewHolder.deviceRssi = view.findViewById(R.id.device_rssi);
+            viewHolder.deviceSn = view.findViewById(R.id.device_sn);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -92,6 +94,7 @@ class SensorListAdapter extends BaseAdapter {
             viewHolder.deviceName.setText(R.string.unknown_sensor);
         viewHolder.deviceAddress.setText(sensor.getAddress());
         viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()));
+        viewHolder.deviceSn.setText(String.valueOf(sensor.getSn()));
 
         int rssi = sensor.getRssi();
 

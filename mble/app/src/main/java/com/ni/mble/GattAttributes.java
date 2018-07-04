@@ -7,8 +7,8 @@ import java.util.HashMap;
  */
 public class GattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
-    public static String NI_MBLE_AUX_SERVICE = "09f792b8-320e-4ee9-a733-48909c1105fda";
-    public static String NI_MBLE_SN_READ = "09f792b8-320e-4ee9-a733-4890e0b05fda";
+    public static String NI_MBLE_AUX_SERVICE = "da5f119c-9048-33a7-e94e-0e32b892f709";
+    public static String NI_MBLE_SN_READ = "da5fb0e0-9048-33a7-e94e-0e32b892f709";
 
     static {
         // NI MBLE services.
