@@ -45,11 +45,11 @@ public class MainActivity extends AppCompatActivity{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //if(Sensor.isDeviceOfInterest(scanRecord)) {
+                            if(Sensor.isDeviceOfInterest(scanRecord)) {
                                 Sensor sensor = new Sensor(device, rssi);
                                 sensorListAdapter.addSensor(sensor);
                                 sensorListAdapter.notifyDataSetChanged();
-                            //}
+                            }
                         }
                     });
                 }
