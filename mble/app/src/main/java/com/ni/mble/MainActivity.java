@@ -45,11 +45,11 @@ public class MainActivity extends AppCompatActivity{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(Sensor.isDeviceOfInterest(scanRecord)) {
+                            //if(Sensor.isDeviceOfInterest(scanRecord)) {
                                 Sensor sensor = new Sensor(device, rssi);
                                 sensorListAdapter.addSensor(sensor);
                                 sensorListAdapter.notifyDataSetChanged();
-                            }
+                            //}
                         }
                     });
                 }
@@ -66,6 +66,10 @@ public class MainActivity extends AppCompatActivity{
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
         sensorsListView = findViewById(R.id.sensors);
+
+        sensorListAdapter = new SensorListAdapter(this);
+        sensorsListView.setAdapter(sensorListAdapter);
+
         handler = new Handler();
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -85,6 +89,31 @@ public class MainActivity extends AppCompatActivity{
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
             return;
+        }
+
+        SharedPreferences shareData = getSharedPreferences("devices", 0);
+        int i = 0;
+        while(true)
+        {
+            String data = shareData.getString(String.valueOf(i), "Null");
+            if (data != "Null")
+            {
+                String serial_num = data.substring(0, 11);
+                String mac_addr = data.substring(11, 28);
+                String device_name = data.substring(28);
+                if (device_name.equalsIgnoreCase("null"))
+                {
+                    device_name = "Unknown Sensor";
+                }
+                Sensor sensor = new Sensor(device_name, mac_addr, serial_num);
+                sensorListAdapter.addSensor(sensor);
+                sensorListAdapter.notifyDataSetChanged();
+            }
+            else
+            {
+                break;
+            }
+            ++i;
         }
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -122,8 +151,7 @@ public class MainActivity extends AppCompatActivity{
 
         tryGainPermissions();
 
-        sensorListAdapter = new SensorListAdapter(this);
-        sensorsListView.setAdapter(sensorListAdapter);
+
 
     }
 
@@ -191,6 +219,18 @@ public class MainActivity extends AppCompatActivity{
         handler.removeCallbacks(runnable);
         bluetoothAdapter.stopLeScan(leScanCallback);
         swipeRefreshLayout.setRefreshing(false);
+        SharedPreferences shareData = getSharedPreferences("devices", 0);
+        SharedPreferences.Editor editor = shareData.edit();
+        editor.clear();
+        editor.commit();
+        int sensor_count = sensorListAdapter.getCount();
+        for (int i = 0; i < sensor_count; ++i)
+        {
+            Sensor sensor = (Sensor) sensorListAdapter.getItem(i);
+            String data = sensor.getSn() + sensor.getAddress() + sensor.getName();
+            editor.putString(String.valueOf(i), data);
+            editor.commit();
+        }
     }
 
     private void startScan() {
