@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_rssi_criteria"/>
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/default_green_rssi"
+        android:inputType="numberSigned"
+        android:key="green_rssi"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_green_rssi_title" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/default_yellow_rssi"
+        android:inputType="numberSigned"
+        android:key="yellow_rssi"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_yellow_rssi_title" />
+</PreferenceScreen>
