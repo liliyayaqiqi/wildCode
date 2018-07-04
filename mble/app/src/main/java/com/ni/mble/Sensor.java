@@ -1,6 +1,7 @@
 package com.ni.mble;
 
 import android.bluetooth.BluetoothDevice;
+import android.util.Log;
 
 class Sensor {
     private BluetoothDevice mDevice;
@@ -13,20 +14,17 @@ class Sensor {
         final int MANUFACTURER_DATA = 0xFF;
         int startIdx = 0;
         while(startIdx < scanRecord.length) {
-            int length = scanRecord[startIdx];
-            if(length < 1 || startIdx + length + 1 > scanRecord.length) {
-                return false;
-            }
-            if(scanRecord[startIdx + 1] == MANUFACTURER_DATA) {
-                if(length < 3) {
+            int record = scanRecord[startIdx] & 0xFF;
+            if(record == MANUFACTURER_DATA) {
+                if(startIdx + 3 > scanRecord.length) {
                     return false;
                 }
-                if(scanRecord[startIdx + 2] == 0x54 && scanRecord[startIdx + 3] == 0x05)
+                if(scanRecord[startIdx + 1] == 0x54 && scanRecord[startIdx + 2] == 0x05)
                 {
                     return true;
                 }
             }
-            startIdx += length + 1;
+            ++startIdx;
         }
         return false;
     }
