@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -33,8 +34,6 @@ public class MainActivity extends AppCompatActivity{
     private boolean isScanning = false;
     private Handler handler;
     private Runnable runnable;
-
-    private SharedPreferences mSharedPref;
 
     private SensorListAdapter sensorListAdapter;
     // Device scan callback.
@@ -61,6 +60,8 @@ public class MainActivity extends AppCompatActivity{
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
         sensorsListView = findViewById(R.id.sensors);
+        sensorListAdapter = new SensorListAdapter(this);
+        sensorsListView.setAdapter(sensorListAdapter);
         handler = new Handler();
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -89,10 +90,16 @@ public class MainActivity extends AppCompatActivity{
             String data = shareData.getString(String.valueOf(i), "Null");
             if (data != "Null")
             {
-                String serial_num = data.substring(0, 8);
-                String mac_addr = data.substring(8, 20);
-                String device_name = data.substring(20);
-                Sensor sensor = new Sensor();
+                String serial_num = data.substring(0, 11);
+                String mac_addr = data.substring(11, 28);
+                String device_name = data.substring(28);
+                if (device_name.equalsIgnoreCase("null"))
+                {
+                    device_name = "Unknown Sensor";
+                }
+                Sensor sensor = new Sensor(device_name, mac_addr, serial_num);
+                sensorListAdapter.addDevice(sensor);
+                sensorListAdapter.notifyDataSetChanged();
             }
             else
             {
@@ -134,9 +141,6 @@ public class MainActivity extends AppCompatActivity{
         super.onResume();
 
         tryGainPermissions();
-
-        sensorListAdapter = new SensorListAdapter(this);
-        sensorsListView.setAdapter(sensorListAdapter);
 
     }
 
@@ -195,6 +199,10 @@ public class MainActivity extends AppCompatActivity{
             stopScan();
         } else
         {
+            /*SharedPreferences shareData = getSharedPreferences("devices", 0);
+            SharedPreferences.Editor editor = shareData.edit();
+            editor.clear();
+            editor.commit();*/
             startScan();
         }
     }
@@ -204,6 +212,19 @@ public class MainActivity extends AppCompatActivity{
         handler.removeCallbacks(runnable);
         bluetoothAdapter.stopLeScan(leScanCallback);
         swipeRefreshLayout.setRefreshing(false);
+
+        SharedPreferences shareData = getSharedPreferences("devices", 0);
+        SharedPreferences.Editor editor = shareData.edit();
+        editor.clear();
+        editor.commit();
+        int sensor_count = sensorListAdapter.getCount();
+        for (int i = 0; i < sensor_count; ++i)
+        {
+            Sensor sensor = (Sensor) sensorListAdapter.getItem(i);
+            String data = sensor.getSn() + sensor.getAddress() + sensor.getName();
+            editor.putString(String.valueOf(i), data);
+            editor.commit();
+        }
     }
 
     private void startScan() {
