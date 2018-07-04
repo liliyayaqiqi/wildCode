@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        scanPeriod = Integer.parseInt(prefs.getString("scan_period", null));
+        scanPeriod = Integer.parseInt(prefs.getString("scan_period", getString(R.string.default_scan_period)));
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity{
         super.onResume();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        scanPeriod = Integer.parseInt(prefs.getString("scan_period", null));
+        scanPeriod = Integer.parseInt(prefs.getString("scan_period", getString(R.string.default_scan_period)));
 
         tryGainPermissions();
 
