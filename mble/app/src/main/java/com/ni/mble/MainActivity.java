@@ -140,6 +140,10 @@ public class MainActivity extends AppCompatActivity{
             case R.id.menu_delete_all:
                 sensorListAdapter.clear();
                 sensorListAdapter.notifyDataSetChanged();
+                SharedPreferences shareData = getSharedPreferences("devices", 0);
+                SharedPreferences.Editor editor = shareData.edit();
+                editor.clear();
+                editor.commit();
             default:
                 return super.onOptionsItemSelected(item);
         }
