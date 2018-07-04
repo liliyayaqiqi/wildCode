@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity{
             return;
         }
 
-        SharedPreferences shareData = getSharedPreferences("devices", 0);
+        /*SharedPreferences shareData = getSharedPreferences("devices", 0);
         int i = 0;
         while(true)
         {
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity{
                 break;
             }
             ++i;
-        }
+        }*/
 
 
 
@@ -199,10 +199,6 @@ public class MainActivity extends AppCompatActivity{
             stopScan();
         } else
         {
-            /*SharedPreferences shareData = getSharedPreferences("devices", 0);
-            SharedPreferences.Editor editor = shareData.edit();
-            editor.clear();
-            editor.commit();*/
             startScan();
         }
     }
@@ -213,7 +209,7 @@ public class MainActivity extends AppCompatActivity{
         bluetoothAdapter.stopLeScan(leScanCallback);
         swipeRefreshLayout.setRefreshing(false);
 
-        SharedPreferences shareData = getSharedPreferences("devices", 0);
+        /*SharedPreferences shareData = getSharedPreferences("devices", 0);
         SharedPreferences.Editor editor = shareData.edit();
         editor.clear();
         editor.commit();
@@ -224,7 +220,7 @@ public class MainActivity extends AppCompatActivity{
             String data = sensor.getSn() + sensor.getAddress() + sensor.getName();
             editor.putString(String.valueOf(i), data);
             editor.commit();
-        }
+        }*/
     }
 
     private void startScan() {
