@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -26,6 +28,9 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.List;
+import java.util.UUID;
+
 public class MainActivity extends AppCompatActivity{
     private final static String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_ENABLE_BT = 1;
@@ -40,11 +45,44 @@ public class MainActivity extends AppCompatActivity{
     private BleService bleService;
     private SensorListAdapter sensorListAdapter;
 
-    private class GattUpdateReceiver implements BroadcastReceiver {
+    private class GattUpdateReceiver extends BroadcastReceiver {
         private SensorListAdapter sensorList;
-        public GattUpdateReceiver(MainActivity activity) {
-            mActivity = activity;
+        private BleService service;
+        private String sensorRequestingSn;
+
+        public GattUpdateReceiver(SensorListAdapter sensorList) {
+            this.sensorList = sensorList;
+            service = null;
+            sensorRequestingSn = null;
         }
+        public void setService(BleService service) {
+            this.service = service;
+        }
+
+        public void setSensorRequestingSn(String address) {
+            sensorRequestingSn = address;
+        }
+
+        private boolean readSn() {
+            if(service != null) {
+                List<BluetoothGattService> serviceList = service.getSupportedGattServices();
+                for(BluetoothGattService srv : serviceList) {
+                    if(srv.getUuid().toString().equals(GattAttributes.NI_MBLE_AUX_SERVICE)) {
+                        Log.v(TAG, "aux service found");
+                        UUID snUuid = UUID.fromString(GattAttributes.NI_MBLE_SN_READ);
+                        BluetoothGattCharacteristic characteristic = srv.getCharacteristic(snUuid);
+                        if(characteristic != null)
+                        {
+                            service.readCharacteristic(characteristic);
+                            return true;
+                        }
+                        break;
+                    }
+                }
+            }
+            return false;
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
@@ -52,27 +90,33 @@ public class MainActivity extends AppCompatActivity{
                 Log.v(TAG,"Connection established");
             } else if (BleService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 Log.v(TAG,"Services discovered");
-                String address = intent.getStringExtra(BleService.SENSOR_ADDRESS);
+                if(sensorRequestingSn != null
+                        && sensorRequestingSn.equals(intent.getStringExtra(BleService.SENSOR_ADDRESS))) {
+                    Log.v(TAG,"Start gatt read to poll sn");
+                    if(!readSn())
+                    {
+                        sensorRequestingSn = null;
+                    }
+                }
             } else if (BleService.ACTION_GATT_SN_READ.equals(action)) {
                 Log.v(TAG,"SN is read");
+                if(sensorRequestingSn != null
+                        && sensorRequestingSn.equals(intent.getStringExtra(BleService.SENSOR_ADDRESS))) {
+                    Log.v(TAG,"Start gatt read to poll sn");
+                    Sensor sensor = sensorList.getSensors().get(sensorRequestingSn);
+                    if(sensor != null) {
+                        sensor.setSn(intent.getStringExtra(BleService.SENSOR_SN));
+                    }
+                    if(service != null) {
+                        service.disconnect();
+                    }
+                    sensorRequestingSn = null;
+                }
             }
         }
     }
 
-    private final BroadcastReceiver gattUpateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if(BleService.ACTION_GATT_CONNECTED.equals(action)) {
-                Log.v(TAG,"Connection established");
-            } else if (BleService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                Log.v(TAG,"Services discovered");
-                String address = intent.getStringExtra(BleService.SENSOR_ADDRESS);
-            } else if (BleService.ACTION_GATT_SN_READ.equals(action)) {
-                Log.v(TAG,"SN is read");
-            }
-        }
-    };
+    private final GattUpdateReceiver gattUpdateReceiver = new GattUpdateReceiver(this.sensorListAdapter);
 
     // Code to manage Service lifecycle.
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -84,11 +128,13 @@ public class MainActivity extends AppCompatActivity{
                 Log.e(TAG, "Unable to initialize Bluetooth");
                 finish();
             }
+            gattUpdateReceiver.setService(bleService);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             bleService = null;
+            gattUpdateReceiver.setService(null);
         }
     };
 
@@ -102,7 +148,12 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void run() {
                             Sensor sensor = new Sensor(device, rssi);
-                            sensorListAdapter.addDevice(sensor);
+                            sensorListAdapter.addSensor(sensor);
+                            if(sensor.getSn() == null) {
+                                if(bleService.connect(sensor.getAddress())) {
+                                    gattUpdateReceiver.setSensorRequestingSn(sensor.getAddress());
+                                }
+                            }
                             sensorListAdapter.notifyDataSetChanged();
                         }
                     });
@@ -143,6 +194,9 @@ public class MainActivity extends AppCompatActivity{
                 toggleScan();
             }
         });
+
+        Intent gattServiceIntent = new Intent(this, BleService.class);
+        bindService(gattServiceIntent, serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -180,6 +234,14 @@ public class MainActivity extends AppCompatActivity{
         if (isScanning) {
             stopScan();
         }
+        unregisterReceiver(gattUpdateReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
+        bleService = null;
     }
 
     private void tryGainPermissions() {
@@ -253,6 +315,4 @@ public class MainActivity extends AppCompatActivity{
         handler.postDelayed(runnable, 10000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
     }
-
-    private void read
 }
