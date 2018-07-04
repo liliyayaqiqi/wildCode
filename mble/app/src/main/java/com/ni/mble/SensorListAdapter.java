@@ -1,6 +1,8 @@
 package com.ni.mble;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,9 +68,9 @@ class SensorListAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         class ViewHolder {
-            TextView deviceName;
-            TextView deviceAddress;
-            TextView deviceRssi;
+            private TextView deviceName;
+            private TextView deviceAddress;
+            private TextView deviceRssi;
         }
 
         ViewHolder viewHolder;
@@ -90,17 +92,20 @@ class SensorListAdapter extends BaseAdapter {
             viewHolder.deviceName.setText(deviceName);
         else
             viewHolder.deviceName.setText(R.string.unknown_sensor);
-        viewHolder.deviceAddress.setText(sensor.getAddress());
-        viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()));
+        viewHolder.deviceAddress.setText(mainActivity.getString(R.string.addr_title) + sensor.getAddress());
+        viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()) + mainActivity.getString(R.string.rssi_unit));
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+        int greenRssi = Integer.parseInt(prefs.getString("green_rssi", mainActivity.getString(R.string.default_green_rssi)));
+        int yellowRssi = Integer.parseInt(prefs.getString("yellow_rssi", mainActivity.getString(R.string.default_yellow_rssi)));
 
         int rssi = sensor.getRssi();
-
-        if(rssi >= -81){
+        if(rssi >= greenRssi){
             int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0x9f22bb55 };
             GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
             view.setBackground(gd);
         }
-        else if (rssi >= -90){
+        else if (rssi >= yellowRssi){
             int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0x9fbbbb22 };
             GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
             view.setBackground(gd);
