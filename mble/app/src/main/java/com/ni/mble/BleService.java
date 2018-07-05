@@ -124,7 +124,8 @@ public class BleService extends Service {
                 for(byte byteChar : data)
                     stringBuilder.append(String.format("%02X ", byteChar));
                 intent.putExtra(SENSOR_ADDRESS, address);
-                intent.putExtra(SENSOR_SN, stringBuilder.toString());
+                String snStr = stringBuilder.toString().trim();
+                intent.putExtra(SENSOR_SN, snStr);
             }
         }
         sendBroadcast(intent);
@@ -230,7 +231,7 @@ public class BleService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        if (mConnectionState == STATE_CONNECTED) {
+        if (mConnectionState != STATE_DISCONNECTED) {
             mBluetoothGatt.disconnect();
         }
     }

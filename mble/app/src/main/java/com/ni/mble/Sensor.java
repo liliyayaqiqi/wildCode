@@ -3,6 +3,9 @@ package com.ni.mble;
 import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+
 class Sensor {
     public final static String UNKNOW_SN = "00 00 00 00";
     private BluetoothDevice mDevice;
@@ -10,6 +13,7 @@ class Sensor {
     private String mName;
     private String mAddress;
     private String mSn;
+    private Timestamp mLastUpdatedTime;
 
     public static boolean isDeviceOfInterest(byte[] scanRecord) {
         final int MANUFACTURER_DATA = 0xFF;
@@ -36,6 +40,7 @@ class Sensor {
         mName = device.getName();
         mAddress = device.getAddress();
         mSn = UNKNOW_SN;
+        mLastUpdatedTime = new Timestamp(System.currentTimeMillis());
     }
 
     public Sensor(String name, String address, String Sn) {
@@ -44,6 +49,20 @@ class Sensor {
         mName = name;
         mAddress = address;
         mSn = Sn;
+        mLastUpdatedTime = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Sensor(String name, String address, String Sn, long time) {
+        mDevice = null;
+        mRssi = -80;
+        mName = name;
+        mAddress = address;
+        mSn = Sn;
+        mLastUpdatedTime = new Timestamp(time);
+    }
+
+    public long getLatestUpdatedTime() {
+        return mLastUpdatedTime.getTime();
     }
 
     public String getName() {
