@@ -10,7 +10,7 @@ public class WaveformActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waveform);
-
+/*
         waveformView = findViewById(R.id.waveform);
         double raw[] = new double[10000];
         for (int i = 0; i < raw.length; ++i) {
@@ -18,5 +18,6 @@ public class WaveformActivity extends AppCompatActivity {
             raw[i] = (double)v / 100.0;
         }
         waveformView.updateVisualizer(raw);
+        */
     }
 }
