@@ -30,6 +30,8 @@
     <string name="addr_title">MAC:</string>
     <string name="rssi_unit">dBm</string>
     <string name="sn_title">SN:</string>
+    <string name="module_title">Module:</string>
+
 
     <string name="channel_name">Channel</string>
     <string name="channel_max">max</string>
