@@ -3,6 +3,8 @@ package com.ni.mble;
 
 import android.content.SharedPreferences;
 
+import android.graphics.drawable.GradientDrawable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 
 import android.support.v7.app.AppCompatActivity;
@@ -93,8 +95,31 @@ public class LocationActivity extends AppCompatActivity {
             summary += indent + info.redNum + " " + getString(R.string.location_red);
             viewHolder.summary.setText(summary);
             viewHolder.averageRssi.setText(getString(R.string.location_rssi) + " " + info.averageRssi);
-            return view;
 
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LocationActivity.this);
+            int greenRssi = Integer.parseInt(prefs.getString("green_rssi", LocationActivity.this.getString(R.string.default_green_rssi)));
+            int yellowRssi = Integer.parseInt(prefs.getString("yellow_rssi", LocationActivity.this.getString(R.string.default_yellow_rssi)));
+
+            int rssi = Integer.parseInt(info.averageRssi);
+            int yellowNum = Integer.parseInt(info.yellowNum);
+            int redNum = Integer.parseInt(info.redNum);
+            if(rssi >= greenRssi && yellowNum == 0 && redNum == 0){
+                int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0x9f22bb55 };
+                GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
+                view.setBackground(gd);
+            }
+            else if (rssi >= yellowRssi && redNum == 0){
+                int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0x9fbbbb22 };
+                GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
+                view.setBackground(gd);
+            }
+            else{
+                int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0xffbb2222 };
+                GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
+                view.setBackground(gd);
+            }
+            return view;
         }
     }
 
