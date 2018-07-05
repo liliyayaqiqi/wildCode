@@ -2,19 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_delete_all"
-        android:icon="@drawable/ic_menu_delete"
-        android:title="@string/delete_all"
+        android:id="@+id/menu_list_location"
+        android:icon="@drawable/ic_menu_list_location"
+        android:title="@string/list_location"
         app:showAsAction="always" />
     <item
         android:id="@+id/menu_save_location"
         android:icon="@drawable/ic_menu_save_location"
         android:title="@string/save_location"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_delete_all"
+        android:icon="@drawable/ic_menu_delete"
+        android:title="@string/delete_all"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_menu_settings"
         android:title="@string/menu_settings"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
 </menu>
