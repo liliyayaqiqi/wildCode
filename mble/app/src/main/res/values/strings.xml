@@ -41,5 +41,11 @@
     <string name="acquire_waveform">Acquire Waveform</string>
     <string name="list_location">List Locations</string>
     <string name="title_locations">Locations</string>
+    <string name="location_summary">Summary</string>
+    <string name="location_scanned">scanned</string>
+    <string name="location_green">green</string>
+    <string name="location_yellow">yellow</string>
+    <string name="location_red">red</string>
+    <string name="location_rssi">Average RSSI:</string>
 
 </resources>
