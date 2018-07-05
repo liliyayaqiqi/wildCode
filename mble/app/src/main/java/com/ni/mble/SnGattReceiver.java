@@ -28,10 +28,14 @@ public class SnGattReceiver extends BroadcastReceiver {
     public void startReadingSn(String address) {
         Log.v(TAG,"startReadingSn");
         if(sensorRequestingSn != null) {
+            Log.v(TAG, "Service not NULL, return");
             return;
         }
         if(bleService != null && bleService.connect(address)) {
+            Log.v(TAG, "connect to server success, set address");
             sensorRequestingSn = address;
+        } else {
+            Log.v(TAG, "connect failed");
         }
     }
 
@@ -84,10 +88,12 @@ public class SnGattReceiver extends BroadcastReceiver {
                     sensorList.notifyDataSetChanged();
                 }
                 if(bleService != null) {
+                    Log.v(TAG,"Sn is read, disconnect");
                     bleService.disconnect();
                 }
             }
         } else if (BleService.ACTION_GATT_DISCONNECTED.equals(action)) {
+            Log.v(TAG,"Disconnected, reset sn address");
             sensorRequestingSn = null;
         }
     }

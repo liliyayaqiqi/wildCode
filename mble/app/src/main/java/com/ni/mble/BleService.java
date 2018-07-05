@@ -16,6 +16,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -117,7 +118,7 @@ public class BleService extends Service {
         final Intent intent = new Intent(action);
 
         if (UUID_NI_MBLE_SN_READ.equals(characteristic.getUuid())) {
-            final byte[] data = characteristic.getValue();
+            final byte[] data = Arrays.copyOfRange(characteristic.getValue(), 22, 25);
             if (data != null && data.length > 0) {
                 final StringBuilder stringBuilder = new StringBuilder(data.length);
                 for(byte byteChar : data)
