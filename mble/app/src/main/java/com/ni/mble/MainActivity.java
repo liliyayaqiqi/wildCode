@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Sensor sensor = (Sensor)sensorListAdapter.getItem(i);
-                if (sensor.getSn() == null) {
+                if (sensor.getSn().equals(Sensor.UNKNOW_SN)) {
                     Toast.makeText(MainActivity.this, R.string.unknown_sn, Toast.LENGTH_LONG);
                     return false;
                 }
@@ -203,9 +203,10 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.menu_settings:
-                Intent intent = new Intent(this, SettingsActivity.class){};
+                intent = new Intent(this, SettingsActivity.class){};
                 startActivity(intent);
                 return true;
             case R.id.menu_delete_all:
@@ -222,6 +223,10 @@ public class MainActivity extends AppCompatActivity{
                     initDialog();
                 }
                 return true;
+            case R.id.menu_list_location:
+                intent = new Intent(this, LocationActivity.class) {};
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -235,9 +240,6 @@ public class MainActivity extends AppCompatActivity{
         scanPeriod = Integer.parseInt(prefs.getString("scan_period", getString(R.string.default_scan_period)));
 
         tryGainPermissions();
-
-
-
     }
 
     @Override
