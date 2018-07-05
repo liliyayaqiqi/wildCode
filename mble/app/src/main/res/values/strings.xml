@@ -29,5 +29,7 @@
     <string name="channel_max">max</string>
     <string name="channel_min">min</string>
     <string name="sample_unit">V</string>
+    <string name="unknown_sn">The sensor\'s SN is not polled yet!</string>
+    <string name="sn">SN</string>
 
 </resources>

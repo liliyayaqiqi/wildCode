@@ -28,6 +28,8 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity{
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_LOCATION_PERMISSIONS = 2;
+    static final String DEVICE_MAC_ID = "device_mac_id";
+    static final String DEVICE_SN_ID = "device_sn_id";
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView sensorsListView;
@@ -72,7 +74,14 @@ public class MainActivity extends AppCompatActivity{
         sensorsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Sensor sensor = (Sensor)sensorListAdapter.getItem(i);
+                if (sensor.getSn() == null) {
+                    Toast.makeText(MainActivity.this, R.string.unknown_sn, Toast.LENGTH_LONG);
+                    return false;
+                }
                 Intent intent = new Intent(MainActivity.this, WaveformActivity.class) { };
+                intent.putExtra(DEVICE_MAC_ID, sensor.getAddress());
+                intent.putExtra(DEVICE_SN_ID, sensor.getSn());
                 startActivity(intent);
                 return true;
             }

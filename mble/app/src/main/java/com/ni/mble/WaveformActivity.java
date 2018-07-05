@@ -1,8 +1,10 @@
 package com.ni.mble;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.media.tv.TvContract;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,6 +26,8 @@ public class WaveformActivity extends AppCompatActivity {
 
     private ListView channelListView;
     private ProgressBar progressBar;
+    private String sn;
+    private String address;
 
     class WaveformAdapter extends BaseAdapter {
         private double samples[][] = null;
@@ -108,6 +112,15 @@ public class WaveformActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waveform);
+        Intent intent = getIntent();
+        address = intent.getStringExtra(MainActivity.DEVICE_MAC_ID);
+        sn = intent.getStringExtra(MainActivity.DEVICE_SN_ID);
+        setTitle(getString(R.string.sn) + ": " + sn);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         channelListView = findViewById(R.id.waveform_channels);
         waveformAdapter = new WaveformAdapter();
