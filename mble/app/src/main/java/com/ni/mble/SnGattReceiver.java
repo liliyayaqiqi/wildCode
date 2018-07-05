@@ -16,6 +16,13 @@ public class SnGattReceiver extends BroadcastReceiver {
     private BleService bleService;
     private String sensorRequestingSn;
 
+    public void resetReceiver() {
+        sensorRequestingSn = null;
+        if(bleService != null) {
+            bleService.disconnect();
+        }
+    }
+
     public SnGattReceiver(SensorListAdapter sensorList) {
         this.sensorList = sensorList;
         bleService = null;
@@ -28,11 +35,12 @@ public class SnGattReceiver extends BroadcastReceiver {
     public void startReadingSn(String address) {
         Log.v(TAG,"startReadingSn");
         if(sensorRequestingSn != null) {
-            Log.v(TAG, "Address not NULL, return");
+            Log.v(TAG, "Address not NULL, current address " + sensorRequestingSn);
+            Log.v(TAG, "Address not NULL, adding address " + address);
             return;
         }
         if(bleService != null && bleService.connect(address)) {
-            Log.v(TAG, "connect to server success, set address");
+            Log.v(TAG, "connect to server success, set address " + address);
             sensorRequestingSn = address;
         } else {
             Log.v(TAG, "connect failed");

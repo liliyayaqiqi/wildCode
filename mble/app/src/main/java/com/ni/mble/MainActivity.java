@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity{
                         public void run() {
                             if(Sensor.isDeviceOfInterest(scanRecord)) {
                                 Sensor sensor = new Sensor(device, rssi);
+                                Log.v(TAG, "device found " + device.getAddress() + " "  + String.valueOf(rssi));
                                 sensor = sensorListAdapter.addSensor(sensor);
                                 if(sensor.getSn().equals(Sensor.UNKNOW_SN) && bleService != null && snGattReceiver != null) {
                                     if(bleService.connect(sensor.getAddress())) {
@@ -271,6 +272,7 @@ public class MainActivity extends AppCompatActivity{
         handler.removeCallbacks(runnable);
         bluetoothAdapter.stopLeScan(leScanCallback);
         swipeRefreshLayout.setRefreshing(false);
+        snGattReceiver.resetReceiver();
         SharedPreferences shareData = getSharedPreferences("devices", 0);
         SharedPreferences.Editor editor = shareData.edit();
         editor.clear();

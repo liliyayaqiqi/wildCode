@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 class Sensor {
-    public final static String UNKNOW_SN = "Polling...";
+    public final static String UNKNOW_SN = "00 00 00 00";
     private BluetoothDevice mDevice;
     private int mRssi;
     private String mName;
