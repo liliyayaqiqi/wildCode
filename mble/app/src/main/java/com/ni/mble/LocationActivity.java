@@ -18,6 +18,9 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class LocationActivity extends AppCompatActivity {
     private ListView locationView;
 
@@ -128,9 +131,10 @@ public class LocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
         setTitle(R.string.title_locations);
-
-        String[] locationInfoNames = getIntent().getStringArrayExtra("locationInfoNames");
-        LocationInfo[] locationList = new LocationInfo[locationInfoNames.length];
+        SharedPreferences allLocations = getSharedPreferences("locations", 0);
+        Set<String> locationInfoNamesSet = allLocations.getStringSet("locations", new HashSet<String>());
+        String[] locationInfoNames = locationInfoNamesSet.toArray(new String[locationInfoNamesSet.size()]);
+        LocationInfo[] locationList = new LocationInfo[locationInfoNamesSet.size()];
         for (int i = 0; i < locationInfoNames.length; ++i)
         {
             String fileName = locationInfoNames[i];
