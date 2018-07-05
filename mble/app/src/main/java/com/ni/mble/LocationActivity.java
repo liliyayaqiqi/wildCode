@@ -84,9 +84,10 @@ public class LocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
         setTitle(R.string.title_locations);
-
-        String[] locationInfoNames = getIntent().getStringArrayExtra("locationInfoNames");
-        locationInfo[] locationList = new locationInfo[locationInfoNames.length];
+        SharedPreferences allLocations = getSharedPreferences("locations", 0);
+        Set<String> locationInfoNamesSet = allLocations.getStringSet("locations", new HashSet<String>());
+        String[] locationInfoNames = locationInfoNamesSet.toArray(new String[locationInfoNamesSet.size()]);
+        locationInfo[] locationList = new locationInfo[locationInfoNamesSet.size()];
         for (int i = 0; i < locationInfoNames.length; ++i)
         {
             String fileName = locationInfoNames[i];
