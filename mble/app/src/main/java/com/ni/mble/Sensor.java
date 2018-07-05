@@ -54,9 +54,9 @@ class Sensor {
         mTimeStamp = getTime();
     }
 
-    public Sensor(String name, String address, String Sn, String time) {
+    public Sensor(String name, String address, String Sn, String time, String rssi) {
         mDevice = null;
-        mRssi = -80;
+        mRssi = Integer.parseInt(rssi);
         mName = name;
         mAddress = address;
         mSn = Sn;
