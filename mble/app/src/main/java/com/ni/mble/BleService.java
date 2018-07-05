@@ -45,13 +45,22 @@ public class BleService extends Service {
             "com.ni.mble.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_GATT_SN_READ =
             "com.ni.mble.ACTION_GATT_SN_READ";
+    public final static String ACTION_GATT_CONFIGURED =
+            "com.ni.mble.ACTION_GATT_CONFIGURED";
+    public final static String ACTION_DATA_AVAILABLE =
+            "com.ni.mble.ACTION_DATA_AVAILABLE";
+
     public final static String SENSOR_ADDRESS =
             "com.ni.mble.le.SENSOR_ADDRESS";
     public final static String SENSOR_SN =
             "com.ni.mble.le.SENSOR_SN";
+    public final static String RAW_DATA =
+            "com.ni.mble.le.RAW_DATA";
 
     public final static UUID UUID_NI_MBLE_SN_READ =
             UUID.fromString(GattAttributes.NI_MBLE_SN_READ);
+    public final static UUID UUID_NI_MBLE_CONFIG_WAVE =
+            UUID.fromString(GattAttributes.NI_MBLE_MEAS_CONFIG_WAVEFORM);
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -99,9 +108,22 @@ public class BleService extends Service {
         }
 
         @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt,
+                                                      BluetoothGattCharacteristic characteristic,
+                                                      int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                if(UUID_NI_MBLE_CONFIG_WAVE.equals(characteristic.getUuid()))
+                {
+                    broadcastUpdate(ACTION_GATT_CONFIGURED, gatt.getDevice().getAddress(), characteristic);
+                }
+
+            }
+        }
+
+        @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
-            //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            broadcastUpdate(ACTION_DATA_AVAILABLE, gatt.getDevice().getAddress(), characteristic);
         }
     };
 
@@ -116,6 +138,7 @@ public class BleService extends Service {
                                  final String address,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
+        intent.putExtra(SENSOR_ADDRESS, address);
 
         if (UUID_NI_MBLE_SN_READ.equals(characteristic.getUuid())) {
             final byte[] data = Arrays.copyOfRange(characteristic.getValue(), 22, 26);
@@ -123,10 +146,13 @@ public class BleService extends Service {
                 final StringBuilder stringBuilder = new StringBuilder(data.length);
                 for(byte byteChar : data)
                     stringBuilder.append(String.format("%02X ", byteChar));
-                intent.putExtra(SENSOR_ADDRESS, address);
                 String snStr = stringBuilder.toString().trim();
                 intent.putExtra(SENSOR_SN, snStr);
             }
+        } else if (UUID.fromString(GattAttributes.NI_MBLE_MEAS_TRANS_DATA).equals(characteristic.getUuid())) {
+            final byte[] gattValue = characteristic.getValue();
+            final byte[] data = Arrays.copyOfRange(gattValue, 4, gattValue.length);
+            intent.putExtra(RAW_DATA, data);
         }
         sendBroadcast(intent);
     }
@@ -263,6 +289,14 @@ public class BleService extends Service {
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
+    public void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        mBluetoothGatt.writeCharacteristic(characteristic);
+    }
+
     /**
      * Enables or disables notification on a give characteristic.
      *
@@ -277,13 +311,12 @@ public class BleService extends Service {
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
-        // This is specific to Heart Rate Measurement.
-        /*if (UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid())) {
+        if (UUID.fromString(GattAttributes.NI_MBLE_MEAS_TRANS_DATA).equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-                    UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+                    UUID.fromString(GattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
-        }*/
+        }
     }
 
     /**
