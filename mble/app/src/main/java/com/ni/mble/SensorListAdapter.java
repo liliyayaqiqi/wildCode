@@ -108,7 +108,7 @@ class SensorListAdapter extends BaseAdapter {
         else
             sn = mainActivity.getString(R.string.sn_title) + sn;
         viewHolder.deviceSn.setText(sn);
-        viewHolder.timeStamp.setText("Update:" + sensor.getTimeStamp());
+        viewHolder.timeStamp.setText(sensor.getTimeStamp());
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         int greenRssi = Integer.parseInt(prefs.getString("green_rssi", mainActivity.getString(R.string.default_green_rssi)));
