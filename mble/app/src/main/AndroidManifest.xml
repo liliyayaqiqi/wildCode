@@ -34,19 +34,25 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ni.mble.MainActivity" />
         </activity>
-
         <activity
             android:name=".WaveformActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ni.mble.MainActivity"/>
+                android:value="com.ni.mble.MainActivity" />
         </activity>
 
         <service
             android:name=".BleService"
             android:enabled="true" />
 
+        <activity
+            android:name=".LocationActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ni.mble.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
