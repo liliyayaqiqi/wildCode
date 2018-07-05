@@ -271,6 +271,7 @@ public class MainActivity extends AppCompatActivity{
         handler.removeCallbacks(runnable);
         bluetoothAdapter.stopLeScan(leScanCallback);
         swipeRefreshLayout.setRefreshing(false);
+        snGattReceiver.resetReceiver();
         SharedPreferences shareData = getSharedPreferences("devices", 0);
         SharedPreferences.Editor editor = shareData.edit();
         editor.clear();

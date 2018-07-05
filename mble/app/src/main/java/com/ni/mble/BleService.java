@@ -122,7 +122,7 @@ public class BleService extends Service {
             if (data != null && data.length > 0) {
                 final StringBuilder stringBuilder = new StringBuilder(data.length);
                 for(byte byteChar : data)
-                    stringBuilder.append(String.format("%02X-", byteChar));
+                    stringBuilder.append(String.format("%02X ", byteChar));
                 intent.putExtra(SENSOR_ADDRESS, address);
                 intent.putExtra(SENSOR_SN, stringBuilder.toString());
             }
@@ -194,7 +194,7 @@ public class BleService extends Service {
         }
 
         // Previously connected device.  Try to reconnect.
-        if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
+        /*if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
                 && mBluetoothGatt != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
@@ -203,7 +203,7 @@ public class BleService extends Service {
             } else {
                 return false;
             }
-        }
+        }*/
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
