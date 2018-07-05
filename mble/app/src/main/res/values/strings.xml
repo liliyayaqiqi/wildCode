@@ -24,9 +24,10 @@
     <string name="pref_scan_period">Scan Period (s)</string>
     <string name="delete_all">Delete All</string>
     <string name="default_scan_period">20</string>
+
     <string name="channel_name">Channel</string>
-    <string name="channel_max">Max</string>
-    <string name="channel_min">Min</string>
+    <string name="channel_max">max</string>
+    <string name="channel_min">min</string>
     <string name="sample_unit">V</string>
 
 </resources>
