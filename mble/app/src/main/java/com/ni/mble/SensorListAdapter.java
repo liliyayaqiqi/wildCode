@@ -3,6 +3,7 @@ package com.ni.mble;
 import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,20 +30,23 @@ class SensorListAdapter extends BaseAdapter {
         mInflator = mainActivity.getLayoutInflater();
     }
 
-    public void addSensor(Sensor sensor) {
+    public Sensor addSensor(Sensor sensor) {
         if(!mSensors.containsKey(sensor.getAddress())) {
-            sensor.setSn("11-22-33-44");
+            //sensor.setSn("11-22-33-44");
             mSensors.put(sensor.getAddress(), sensor);
             mViewData.add(sensor);
+            return sensor;
         }
         else {
             Sensor sensorItem = mSensors.get(sensor.getAddress());
+            Log.v("Sensor List Adapter", "rssi " + String.valueOf(sensor.getRssi()));
             sensorItem.updateRssi(sensor.getRssi());
+            return sensorItem;
         }
     }
 
-    public BluetoothDevice getDevice(int position) {
-        return mViewData.get(position).getDevice();
+    public Map<String, Sensor> getSensors() {
+        return mSensors;
     }
 
     public void clear() {
@@ -68,9 +72,11 @@ class SensorListAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         class ViewHolder {
-            private TextView deviceName;
-            private TextView deviceAddress;
-            private TextView deviceRssi;
+            TextView deviceName;
+            TextView deviceAddress;
+            TextView deviceSn;
+            TextView deviceRssi;
+            TextView timeStamp;
         }
 
         ViewHolder viewHolder;
@@ -81,6 +87,8 @@ class SensorListAdapter extends BaseAdapter {
             viewHolder.deviceAddress = view.findViewById(R.id.device_address);
             viewHolder.deviceName = view.findViewById(R.id.device_name);
             viewHolder.deviceRssi = view.findViewById(R.id.device_rssi);
+            viewHolder.deviceSn = view.findViewById(R.id.device_sn);
+            viewHolder.timeStamp = view.findViewById(R.id.timeStamp);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -94,6 +102,13 @@ class SensorListAdapter extends BaseAdapter {
             viewHolder.deviceName.setText(R.string.unknown_sensor);
         viewHolder.deviceAddress.setText(mainActivity.getString(R.string.addr_title) + sensor.getAddress());
         viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()) + mainActivity.getString(R.string.rssi_unit));
+        String sn = sensor.getSn();
+        if (sn == null)
+            sn = mainActivity.getString(R.string.sn_title) + "xx-xx-xx-xx";
+        else
+            sn = mainActivity.getString(R.string.sn_title) + sn;
+        viewHolder.deviceSn.setText(sn);
+        viewHolder.timeStamp.setText("Update:" + sensor.getTimeStamp());
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         int greenRssi = Integer.parseInt(prefs.getString("green_rssi", mainActivity.getString(R.string.default_green_rssi)));

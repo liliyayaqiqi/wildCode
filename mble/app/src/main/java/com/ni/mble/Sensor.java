@@ -1,14 +1,18 @@
 package com.ni.mble;
 
 import android.bluetooth.BluetoothDevice;
-import android.util.Log;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 class Sensor {
+    public final static String UNKNOW_SN = "00 00 00 00";
     private BluetoothDevice mDevice;
     private int mRssi;
     private String mName;
     private String mAddress;
     private String mSn;
+    private String mTimeStamp;
 
     public static boolean isDeviceOfInterest(byte[] scanRecord) {
         final int MANUFACTURER_DATA = 0xFF;
@@ -34,7 +38,8 @@ class Sensor {
         mRssi = rssi;
         mName = device.getName();
         mAddress = device.getAddress();
-        mSn = null;
+        mSn = UNKNOW_SN;
+        mTimeStamp = getTime();
     }
 
     public Sensor(String name, String address, String Sn) {
@@ -43,6 +48,7 @@ class Sensor {
         mName = name;
         mAddress = address;
         mSn = Sn;
+        mTimeStamp = getTime();
     }
 
     public String getName() {
@@ -69,5 +75,13 @@ class Sensor {
 
     public BluetoothDevice getDevice() {
         return mDevice;
+    }
+
+    public String getTimeStamp(){
+        return mTimeStamp;
+    }
+    private String getTime(){
+        SimpleDateFormat dataFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        return dataFormat.format(new java.util.Date(System.currentTimeMillis()));
     }
 }

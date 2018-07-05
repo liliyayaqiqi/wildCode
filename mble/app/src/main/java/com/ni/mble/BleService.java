@@ -16,6 +16,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,8 +65,8 @@ public class BleService extends Service {
                 broadcastUpdate(intentAction, gatt.getDevice().getAddress());
                 Log.i(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
-                Log.i(TAG, "Attempting to start service discovery:" +
-                        mBluetoothGatt.discoverServices());
+                Log.i(TAG, "Attempting to start service discovery:");
+                mBluetoothGatt.discoverServices();
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
@@ -117,7 +118,7 @@ public class BleService extends Service {
         final Intent intent = new Intent(action);
 
         if (UUID_NI_MBLE_SN_READ.equals(characteristic.getUuid())) {
-            final byte[] data = characteristic.getValue();
+            final byte[] data = Arrays.copyOfRange(characteristic.getValue(), 22, 26);
             if (data != null && data.length > 0) {
                 final StringBuilder stringBuilder = new StringBuilder(data.length);
                 for(byte byteChar : data)
@@ -193,7 +194,7 @@ public class BleService extends Service {
         }
 
         // Previously connected device.  Try to reconnect.
-        if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
+        /*if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
                 && mBluetoothGatt != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
@@ -202,7 +203,7 @@ public class BleService extends Service {
             } else {
                 return false;
             }
-        }
+        }*/
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
@@ -229,7 +230,9 @@ public class BleService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        mBluetoothGatt.disconnect();
+        if (mConnectionState == STATE_CONNECTED) {
+            mBluetoothGatt.disconnect();
+        }
     }
 
     /**

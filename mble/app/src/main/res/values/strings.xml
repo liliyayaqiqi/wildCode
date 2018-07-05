@@ -24,8 +24,10 @@
     <string name="pref_scan_period">Scan Period (s)</string>
     <string name="delete_all">Delete All</string>
     <string name="save_location">Save Location</string>
-    <string name="default_scan_period">20</string>
+
+    <string name="default_scan_period">60</string>
 
     <string name="addr_title">MAC:</string>
     <string name="rssi_unit">dBm</string>
+    <string name="sn_title">SN:</string>
 </resources>
