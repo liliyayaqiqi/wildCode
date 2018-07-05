@@ -1,6 +1,7 @@
 package com.ni.mble;
 
 import android.bluetooth.BluetoothDevice;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,12 +33,14 @@ class SensorListAdapter extends BaseAdapter {
             //sensor.setSn("11-22-33-44");
             mSensors.put(sensor.getAddress(), sensor);
             mViewData.add(sensor);
+            return sensor;
         }
         else {
-            sensor = mSensors.get(sensor.getAddress());
-            sensor.updateRssi(sensor.getRssi());
+            Sensor sensorItem = mSensors.get(sensor.getAddress());
+            Log.v("Sensor List Adapter", "rssi " + String.valueOf(sensor.getRssi()));
+            sensorItem.updateRssi(sensor.getRssi());
+            return sensorItem;
         }
-        return sensor;
     }
 
     public Map<String, Sensor> getSensors() {
