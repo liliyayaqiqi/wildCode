@@ -67,6 +67,7 @@ public class LocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+        setTitle(R.string.title_locations);
 
         locationView = findViewById(R.id.locations);
         locationView.setAdapter(new LocationAdapter());
