@@ -5,6 +5,9 @@ import android.bluetooth.BluetoothDevice;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+
 class Sensor {
     public final static String UNKNOW_SN = "00 00 00 00";
     private BluetoothDevice mDevice;
@@ -51,6 +54,15 @@ class Sensor {
         mTimeStamp = getTime();
     }
 
+    public Sensor(String name, String address, String Sn, String time) {
+        mDevice = null;
+        mRssi = -80;
+        mName = name;
+        mAddress = address;
+        mSn = Sn;
+        mTimeStamp = time;
+    }
+
     public String getName() {
         return mName;
     }
@@ -61,6 +73,7 @@ class Sensor {
 
     public void updateRssi(int rssi) {
         mRssi = rssi;
+        mTimeStamp = getTimeStamp();
     }
 
     public String getSn() { return mSn; }

@@ -15,6 +15,15 @@ public class SnGattReceiver extends BroadcastReceiver {
     private SensorListAdapter sensorList;
     private BleService bleService;
     private String sensorRequestingSn;
+    private MainActivity activity;
+
+    public SnGattReceiver(SensorListAdapter sensorList,
+                          MainActivity activity) {
+        this.sensorList = sensorList;
+        bleService = null;
+        sensorRequestingSn = null;
+        this.activity = activity;
+    }
 
     public void resetReceiver() {
         sensorRequestingSn = null;
@@ -23,11 +32,6 @@ public class SnGattReceiver extends BroadcastReceiver {
         }
     }
 
-    public SnGattReceiver(SensorListAdapter sensorList) {
-        this.sensorList = sensorList;
-        bleService = null;
-        sensorRequestingSn = null;
-    }
     public void setService(BleService service) {
         this.bleService = service;
     }
@@ -39,6 +43,7 @@ public class SnGattReceiver extends BroadcastReceiver {
             Log.v(TAG, "Address not NULL, adding address " + address);
             return;
         }
+        activity.suspendScan();
         if(bleService != null && bleService.connect(address)) {
             Log.v(TAG, "connect to server success, set address " + address);
             sensorRequestingSn = address;
@@ -103,6 +108,7 @@ public class SnGattReceiver extends BroadcastReceiver {
         } else if (BleService.ACTION_GATT_DISCONNECTED.equals(action)) {
             Log.v(TAG,"Disconnected, reset sn address");
             sensorRequestingSn = null;
+            activity.resumeScan();
         }
     }
 }

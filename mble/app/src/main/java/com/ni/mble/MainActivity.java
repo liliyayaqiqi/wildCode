@@ -33,6 +33,8 @@ import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 public class MainActivity extends AppCompatActivity{
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity{
     private ListView sensorsListView;
     private BluetoothAdapter bluetoothAdapter;
     private boolean isScanning = false;
+    private boolean isSuspended = false;
     private Handler handler;
     private Runnable runnable;
     private BleService bleService;
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity{
     private int scannedNum = 0;
     private int averageRssi = 0;
     private Set<String> locationInfo = new HashSet<String>();
+    private long scanStopTarget;
 
     // Code to manage Service lifecycle.
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -91,9 +95,7 @@ public class MainActivity extends AppCompatActivity{
                                 Log.v(TAG, "device found " + device.getAddress() + " "  + String.valueOf(rssi));
                                 sensor = sensorListAdapter.addSensor(sensor);
                                 if(sensor.getSn().equals(Sensor.UNKNOW_SN) && bleService != null && snGattReceiver != null) {
-                                    if(bleService.connect(sensor.getAddress())) {
-                                        snGattReceiver.startReadingSn(sensor.getAddress());
-                                    }
+                                    snGattReceiver.startReadingSn(sensor.getAddress());
                                 }
                                 sensorListAdapter.notifyDataSetChanged();
                             }
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity{
 
         sensorListAdapter = new SensorListAdapter(this);
         sensorsListView.setAdapter(sensorListAdapter);
-        snGattReceiver = new SnGattReceiver(sensorListAdapter);
+        snGattReceiver = new SnGattReceiver(sensorListAdapter, this);
 
         handler = new Handler();
         // Use this check to determine whether BLE is supported on the device.  Then you can
@@ -287,6 +289,26 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    public void suspendScan() {
+        if (!isSuspended && isScanning) {
+            bluetoothAdapter.stopLeScan(leScanCallback);
+            isSuspended = true;
+            Log.v(TAG, "Scan suspended");
+        }
+    }
+
+    public void resumeScan() {
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        scanStopTarget = currentTime.getTime() + scanPeriod * 1000;
+        if (isScanning
+                && isSuspended == true
+                && currentTime.getTime() + 3000 < scanStopTarget) {
+            bluetoothAdapter.startLeScan(leScanCallback);
+            Log.v(TAG, "Scan resumed");
+            isSuspended = false;
+        }
+    }
+
     private void stopScan() {
         isScanning = false;
         handler.removeCallbacks(runnable);
@@ -303,6 +325,8 @@ public class MainActivity extends AppCompatActivity{
             Sensor sensor = (Sensor) sensorListAdapter.getItem(i);
             String data = sensor.getSn() + sensor.getAddress() + sensor.getName();
             editor.putString(String.valueOf(i), data);
+            Log.v(TAG, sensor.getSn());
+            Log.v(TAG, sensor.getAddress());
             editor.commit();
         }
         updateLocationInfo();
@@ -377,6 +401,8 @@ public class MainActivity extends AppCompatActivity{
             }
         };
         isScanning = true;
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        scanStopTarget = currentTime.getTime() + scanPeriod * 1000;
         handler.postDelayed(runnable, scanPeriod * 1000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
     }
