@@ -5,11 +5,16 @@
         android:id="@+id/menu_delete_all"
         android:icon="@drawable/ic_menu_delete"
         android:title="@string/delete_all"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_save_location"
+        android:icon="@drawable/ic_menu_save_location"
+        android:title="@string/save_location"
+        app:showAsAction="never" />
     <item
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_menu_settings"
         android:title="@string/menu_settings"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
 </menu>

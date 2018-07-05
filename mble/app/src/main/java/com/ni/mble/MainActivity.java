@@ -2,6 +2,7 @@ package com.ni.mble;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,8 +22,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity{
     private static final int REQUEST_ENABLE_BT = 1;
@@ -34,6 +40,15 @@ public class MainActivity extends AppCompatActivity{
     private Handler handler;
     private Runnable runnable;
     private int scanPeriod;
+
+    private int greenNum = 0;
+    private int yellowNum = 0;
+    private int redNum = 0;
+    private int scannedNum = 0;
+    private int averageRssi = 0;
+    private Set<String> locationInfo = new HashSet<String>();
+
+    private AlertDialog alertDialog;
 
     private SensorListAdapter sensorListAdapter;
     // Device scan callback.
@@ -144,6 +159,13 @@ public class MainActivity extends AppCompatActivity{
                 SharedPreferences.Editor editor = shareData.edit();
                 editor.clear();
                 editor.commit();
+                return true;
+            case R.id.menu_save_location:
+                if (sensorListAdapter.getCount()>0)
+                {
+                    initDialog();
+                }
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -238,6 +260,66 @@ public class MainActivity extends AppCompatActivity{
             editor.putString(String.valueOf(i), data);
             editor.commit();
         }
+        updateLocationInfo();
+    }
+
+    private void saveLocation(String locationName)
+    {
+        SharedPreferences shareData = getSharedPreferences(locationName, 0);
+        SharedPreferences.Editor editor = shareData.edit();
+        if(locationInfo.contains(locationName))
+        {
+            editor.clear();
+            editor.commit();
+        }
+        else
+        {
+            locationInfo.add(locationName);
+        }
+        editor.putString("average_rssi", String.valueOf(averageRssi));
+        editor.putString("scanned_num", String.valueOf(scannedNum));
+        editor.putString("green_num", String.valueOf(greenNum));
+        editor.putString("yellow_num", String.valueOf(yellowNum));
+        editor.putString("red_num", String.valueOf(redNum));
+        editor.commit();
+    }
+
+    private void updateLocationInfo() {
+
+        int sensor_count = sensorListAdapter.getCount();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int greenRssi = Integer.parseInt(prefs.getString("green_rssi", this.getString(R.string.default_green_rssi)));
+        int yellowRssi = Integer.parseInt(prefs.getString("yellow_rssi", this.getString(R.string.default_yellow_rssi)));
+        int totalRssi = 0;
+        resetLocationInfo();
+        for (int i = 0; i < sensor_count; ++i)
+        {
+            Sensor sensor = (Sensor) sensorListAdapter.getItem(i);
+            int rssi = sensor.getRssi();
+            totalRssi += rssi;
+            if (rssi >= greenRssi)
+            {
+                ++greenNum;
+            }
+            else if (rssi >= yellowRssi)
+            {
+                ++yellowNum;
+            }
+            else
+            {
+                ++redNum;
+            }
+        }
+        averageRssi = totalRssi/sensor_count;
+        scannedNum = sensor_count;
+    }
+
+    private void resetLocationInfo(){
+        averageRssi = 0;
+        scannedNum = 0;
+        greenNum = 0;
+        yellowNum = 0;
+        redNum = 0;
     }
 
     private void startScan() {
@@ -252,5 +334,37 @@ public class MainActivity extends AppCompatActivity{
         isScanning = true;
         handler.postDelayed(runnable, scanPeriod * 1000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
+    }
+
+    public  void initDialog()
+    {
+        final EditText et = new EditText(MainActivity.this);
+        et.setText("Location 1");
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Location Info");
+        builder.setIcon(R.mipmap.ic_launcher_round);
+        builder.setView(et);
+        String average = "Average RSSI: " + String.valueOf(averageRssi);
+        String scanned = "Scanned: "+ String.valueOf(scannedNum);
+        String green = "Green: "+ String.valueOf(greenNum);
+        String yellow = "Yellow: "+ String.valueOf(yellowNum);
+        String red = "Red: "+ String.valueOf(redNum);
+        final String listItems[] = new String[]{average, scanned, green, yellow, red, "Please enter the location name"};
+        builder.setItems(listItems, null);
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String input = et.getText().toString();
+                Toast.makeText(MainActivity.this, "Saved " + input, Toast.LENGTH_SHORT).show();
+                saveLocation(input);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.show();
     }
 }
