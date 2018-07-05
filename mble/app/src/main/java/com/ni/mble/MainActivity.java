@@ -396,7 +396,14 @@ public class MainActivity extends AppCompatActivity{
                 ++redNum;
             }
         }
-        averageRssi = totalRssi/sensor_count;
+        if (sensor_count > 0)
+        {
+            averageRssi = totalRssi/sensor_count;
+        }
+        else
+        {
+            averageRssi = -80;
+        }
         scannedNum = sensor_count;
     }
 
