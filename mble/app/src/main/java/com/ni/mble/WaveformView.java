@@ -10,30 +10,10 @@ import android.view.View;
 
 public class WaveformView extends View {
 
-    /**
-     * constant value for Height of the bar
-     */
-    public static final int VISUALIZER_HEIGHT = 28;
+    private double[] samples;
 
-    /**
-     * bytes array converted from file.
-     */
-    private byte[] bytes;
 
-    /**
-     * Percentage of audio sample scale
-     * Should updated dynamically while audioPlayer is played
-     */
-    private float denseness;
-
-    /**
-     * Canvas painting for sample scale, filling played part of audio sample
-     */
-    private Paint playedStatePainting = new Paint();
-    /**
-     * Canvas painting for sample scale, filling not played part of audio sample
-     */
-    private Paint notPlayedStatePainting = new Paint();
+    private Paint paint = new Paint();
 
     private int width;
     private int height;
@@ -49,36 +29,18 @@ public class WaveformView extends View {
     }
 
     private void init() {
-        bytes = null;
+        samples = null;
 
-        playedStatePainting.setStrokeWidth(1f);
-        playedStatePainting.setAntiAlias(true);
-        playedStatePainting.setColor(ContextCompat.getColor(getContext(), R.color.dim_foreground_disabled_material_dark));
-        notPlayedStatePainting.setStrokeWidth(1f);
-        notPlayedStatePainting.setAntiAlias(true);
-        notPlayedStatePainting.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        paint.setStrokeWidth(1f);
+        paint.setAntiAlias(true);
+        paint.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
     }
 
     /**
      * update and redraw Visualizer view
      */
-    public void updateVisualizer(byte[] bytes) {
-        this.bytes = bytes;
-        invalidate();
-    }
-
-    /**
-     * Update player percent. 0 - file not played, 1 - full played
-     *
-     * @param percent
-     */
-    public void updatePlayerPercent(float percent) {
-        denseness = (int) Math.ceil(width * percent);
-        if (denseness < 0) {
-            denseness = 0;
-        } else if (denseness > width) {
-            denseness = width;
-        }
+    public void updateVisualizer(double[] samples) {
+        this.samples = samples;
         invalidate();
     }
 
@@ -92,20 +54,19 @@ public class WaveformView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (bytes == null || width == 0) {
+        if (samples == null || width == 0) {
             return;
         }
-        float totalBarsCount = width / dp(3);
-        if (totalBarsCount <= 0.1f) {
+        double totalBarsCount = width / dp(1);
+        if (totalBarsCount <= 0.1) {
             return;
         }
-        byte value;
-        int samplesCount = (bytes.length * 8 / 5);
-        float samplesPerBar = samplesCount / totalBarsCount;
-        float barCounter = 0;
+        int samplesCount = samples.length;
+        double samplesPerBar = samplesCount / totalBarsCount;
+        double barCounter = 0;
         int nextBarNum = 0;
 
-        int y = (height - dp(VISUALIZER_HEIGHT)) / 2;
+        int y = height;
         int barNum = 0;
         int lastBarNum;
         int drawBarCount;
@@ -122,31 +83,11 @@ public class WaveformView extends View {
                 drawBarCount++;
             }
 
-            int bitPointer = a * 5;
-            int byteNum = bitPointer / Byte.SIZE;
-            int byteBitOffset = bitPointer - byteNum * Byte.SIZE;
-            int currentByteCount = Byte.SIZE - byteBitOffset;
-            int nextByteRest = 5 - currentByteCount;
-            value = (byte) ((bytes[byteNum] >> byteBitOffset) & ((2 << (Math.min(5, currentByteCount) - 1)) - 1));
-            if (nextByteRest > 0) {
-                value <<= nextByteRest;
-                value |= bytes[byteNum + 1] & ((2 << (nextByteRest - 1)) - 1);
-            }
-
+            double value = samples[a];
             for (int b = 0; b < drawBarCount; b++) {
-                int x = barNum * dp(3);
-                float left = x;
-                float top = y + dp(VISUALIZER_HEIGHT - Math.max(1, VISUALIZER_HEIGHT * value / 31.0f));
-                float right = x + dp(2);
-                float bottom = y + dp(VISUALIZER_HEIGHT);
-                if (x < denseness && x + dp(2) < denseness) {
-                    canvas.drawRect(left, top, right, bottom, notPlayedStatePainting);
-                } else {
-                    canvas.drawRect(left, top, right, bottom, playedStatePainting);
-                    if (x < denseness) {
-                        canvas.drawRect(left, top, right, bottom, notPlayedStatePainting);
-                    }
-                }
+                float x = barNum * dp(1);
+                float h = y - (float) (height * value);
+                canvas.drawLine(x, y, x, h, paint);
                 barNum++;
             }
         }

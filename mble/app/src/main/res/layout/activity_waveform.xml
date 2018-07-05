@@ -5,5 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".WaveformActivity">
+    <com.ni.mble.WaveformView
+        android:id="@+id/waveform"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
 
 </android.support.constraint.ConstraintLayout>
