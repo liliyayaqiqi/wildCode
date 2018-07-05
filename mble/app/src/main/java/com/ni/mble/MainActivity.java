@@ -167,12 +167,13 @@ public class MainActivity extends AppCompatActivity{
             {
                 String serial_num = data.substring(0, 11);
                 String mac_addr = data.substring(11, 28);
-                String device_name = data.substring(28);
+                String timestamp = data.substring(28, 47);
+                String device_name = data.substring(47);
                 if (device_name.equalsIgnoreCase("null"))
                 {
                     device_name = "Unknown Sensor";
                 }
-                Sensor sensor = new Sensor(device_name, mac_addr, serial_num);
+                Sensor sensor = new Sensor(device_name, mac_addr, serial_num, timestamp);
                 sensorListAdapter.addSensor(sensor);
                 sensorListAdapter.notifyDataSetChanged();
             }
@@ -340,10 +341,8 @@ public class MainActivity extends AppCompatActivity{
         for (int i = 0; i < sensor_count; ++i)
         {
             Sensor sensor = (Sensor) sensorListAdapter.getItem(i);
-            String data = sensor.getSn() + sensor.getAddress() + sensor.getName();
+            String data = sensor.getSn() + sensor.getAddress() + sensor.getTimeStamp() + sensor.getName();
             editor.putString(String.valueOf(i), data);
-            Log.v(TAG, sensor.getSn());
-            Log.v(TAG, sensor.getAddress());
             editor.commit();
         }
         updateLocationInfo();
