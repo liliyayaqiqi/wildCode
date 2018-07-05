@@ -29,13 +29,17 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="com.ni.mble.MainActivity">
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ni.mble.MainActivity"/>
+                android:value="com.ni.mble.MainActivity" />
         </activity>
-        <service android:name=".BleService"
+
+        <service
+            android:name=".BleService"
             android:enabled="true" />
+
+        <activity android:name=".WaveformActivity"></activity>
     </application>
 
 </manifest>
