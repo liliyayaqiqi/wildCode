@@ -5,25 +5,31 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity{
+    private final static String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_LOCATION_PERMISSIONS = 2;
 
@@ -33,9 +39,31 @@ public class MainActivity extends AppCompatActivity{
     private boolean isScanning = false;
     private Handler handler;
     private Runnable runnable;
+    private BleService bleService;
+    private SensorListAdapter sensorListAdapter;
+    private SnGattReceiver snGattReceiver;
     private int scanPeriod;
 
-    private SensorListAdapter sensorListAdapter;
+    // Code to manage Service lifecycle.
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            bleService = ((BleService.LocalBinder) service).getService();
+            if (!bleService.initialize()) {
+                Log.e(TAG, "Unable to initialize Bluetooth");
+                finish();
+            }
+            snGattReceiver.setService(bleService);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            bleService = null;
+            snGattReceiver.setService(null);
+        }
+    };
+
     // Device scan callback.
     private BluetoothAdapter.LeScanCallback leScanCallback =
             new BluetoothAdapter.LeScanCallback() {
@@ -47,7 +75,12 @@ public class MainActivity extends AppCompatActivity{
                         public void run() {
                             if(Sensor.isDeviceOfInterest(scanRecord)) {
                                 Sensor sensor = new Sensor(device, rssi);
-                                sensorListAdapter.addSensor(sensor);
+                                sensor = sensorListAdapter.addSensor(sensor);
+                                if(sensor.getSn().equals(Sensor.UNKNOW_SN) && bleService != null && snGattReceiver != null) {
+                                    if(bleService.connect(sensor.getAddress())) {
+                                        snGattReceiver.startReadingSn(sensor.getAddress());
+                                    }
+                                }
                                 sensorListAdapter.notifyDataSetChanged();
                             }
                         }
@@ -69,6 +102,7 @@ public class MainActivity extends AppCompatActivity{
 
         sensorListAdapter = new SensorListAdapter(this);
         sensorsListView.setAdapter(sensorListAdapter);
+        snGattReceiver = new SnGattReceiver(sensorListAdapter);
 
         handler = new Handler();
         // Use this check to determine whether BLE is supported on the device.  Then you can
@@ -122,6 +156,9 @@ public class MainActivity extends AppCompatActivity{
                 toggleScan();
             }
         });
+
+        Intent gattServiceIntent = new Intent(this, BleService.class);
+        bindService(gattServiceIntent, serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -152,7 +189,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-
+        registerReceiver(snGattReceiver, makeGattUpdateIntentFilter());
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         scanPeriod = Integer.parseInt(prefs.getString("scan_period", getString(R.string.default_scan_period)));
 
@@ -168,6 +205,14 @@ public class MainActivity extends AppCompatActivity{
         if (isScanning) {
             stopScan();
         }
+        unregisterReceiver(snGattReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
+        bleService = null;
     }
 
     private void tryGainPermissions() {
@@ -252,5 +297,14 @@ public class MainActivity extends AppCompatActivity{
         isScanning = true;
         handler.postDelayed(runnable, scanPeriod * 1000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
+    }
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BleService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BleService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BleService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BleService.ACTION_GATT_SN_READ);
+        return intentFilter;
     }
 }
