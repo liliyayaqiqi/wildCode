@@ -4,6 +4,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +80,19 @@ public class LocationActivity extends AppCompatActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.menu_delete_all:
+                deleteLocations();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteLocations() {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.location_menu, menu);
+        return true;
     }
 }
