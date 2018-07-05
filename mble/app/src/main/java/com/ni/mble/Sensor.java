@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 
 class Sensor {
-    public final static String UNKNOW_SN = "Polling...";
+    public final static String UNKNOW_SN = "00 00 00 00";
     private BluetoothDevice mDevice;
     private int mRssi;
     private String mName;

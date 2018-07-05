@@ -77,11 +77,11 @@ public class MainActivity extends AppCompatActivity{
                                 Sensor sensor = new Sensor(device, rssi);
                                 Log.v(TAG, "device found " + device.getAddress() + " "  + String.valueOf(rssi));
                                 sensor = sensorListAdapter.addSensor(sensor);
-                                /*if(sensor.getSn().equals(Sensor.UNKNOW_SN) && bleService != null && snGattReceiver != null) {
+                                if(sensor.getSn().equals(Sensor.UNKNOW_SN) && bleService != null && snGattReceiver != null) {
                                     if(bleService.connect(sensor.getAddress())) {
                                         snGattReceiver.startReadingSn(sensor.getAddress());
                                     }
-                                }*/
+                                }
                                 sensorListAdapter.notifyDataSetChanged();
                             }
                         }
