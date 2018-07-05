@@ -97,7 +97,12 @@ class SensorListAdapter extends BaseAdapter {
             viewHolder.deviceName.setText(R.string.unknown_sensor);
         viewHolder.deviceAddress.setText(mainActivity.getString(R.string.addr_title) + sensor.getAddress());
         viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()) + mainActivity.getString(R.string.rssi_unit));
-        viewHolder.deviceSn.setText(String.valueOf(sensor.getSn()));
+        String sn = sensor.getSn();
+        if (sn == null)
+            sn = mainActivity.getString(R.string.sn_title) + "xx-xx-xx-xx";
+        else
+            sn = mainActivity.getString(R.string.sn_title) + sn;
+        viewHolder.deviceSn.setText(sn);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         int greenRssi = Integer.parseInt(prefs.getString("green_rssi", mainActivity.getString(R.string.default_green_rssi)));

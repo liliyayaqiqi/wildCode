@@ -27,4 +27,5 @@
 
     <string name="addr_title">MAC:</string>
     <string name="rssi_unit">dBm</string>
+    <string name="sn_title">SN:</string>
 </resources>
