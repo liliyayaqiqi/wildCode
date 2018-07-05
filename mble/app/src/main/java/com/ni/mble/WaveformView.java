@@ -11,6 +11,8 @@ import android.view.View;
 public class WaveformView extends View {
 
     private double[] samples;
+    private double min;
+    private double max;
 
 
     private Paint paint = new Paint();
@@ -39,8 +41,10 @@ public class WaveformView extends View {
     /**
      * update and redraw Visualizer view
      */
-    public void updateVisualizer(double[] samples) {
+    public void updateVisualizer(double[] samples, double min, double max) {
         this.samples = samples;
+        this.min = min;
+        this.max = max;
         invalidate();
     }
 
@@ -83,7 +87,7 @@ public class WaveformView extends View {
                 drawBarCount++;
             }
 
-            double value = samples[a];
+            double value = (samples[a] - min) / (max - min);
             for (int b = 0; b < drawBarCount; b++) {
                 float x = barNum * dp(1);
                 float h = y - (float) (height * value);
