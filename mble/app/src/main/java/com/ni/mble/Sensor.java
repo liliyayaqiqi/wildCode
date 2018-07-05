@@ -73,7 +73,7 @@ class Sensor {
 
     public void updateRssi(int rssi) {
         mRssi = rssi;
-        mTimeStamp = getTimeStamp();
+        mTimeStamp = getTime();
     }
 
     public String getSn() { return mSn; }
