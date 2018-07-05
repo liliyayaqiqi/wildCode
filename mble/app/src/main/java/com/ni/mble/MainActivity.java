@@ -230,8 +230,6 @@ public class MainActivity extends AppCompatActivity{
                 return true;
             case R.id.menu_list_location:
                 intent = new Intent(this, LocationActivity.class) {};
-                String[] myList = locationInfo.toArray(new String[locationInfo.size()]);
-                intent.putExtra("locationInfoNames", myList);
                 startActivity(intent);
                 return true;
             default:
@@ -376,6 +374,9 @@ public class MainActivity extends AppCompatActivity{
         editor.putString("yellow_num", String.valueOf(yellowNum));
         editor.putString("red_num", String.valueOf(redNum));
         editor.commit();
+        SharedPreferences allLocation = getSharedPreferences("locations", 0);
+        SharedPreferences.Editor locationEditor = allLocation.edit();
+        locationEditor.putStringSet("locations", locationInfo);
     }
 
     private void updateLocationInfo() {
