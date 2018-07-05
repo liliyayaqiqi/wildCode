@@ -225,6 +225,8 @@ public class MainActivity extends AppCompatActivity{
                 return true;
             case R.id.menu_list_location:
                 intent = new Intent(this, LocationActivity.class) {};
+                String[] myList = locationInfo.toArray(new String[locationInfo.size()]);
+                intent.putExtra("locationInfoNames", myList);
                 startActivity(intent);
                 return true;
             default:

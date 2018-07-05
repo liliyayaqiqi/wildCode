@@ -1,6 +1,10 @@
 package com.ni.mble;
 
+
+import android.content.SharedPreferences;
+
 import android.support.v4.app.NavUtils;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class LocationActivity extends AppCompatActivity {
     private ListView locationView;
@@ -64,11 +71,35 @@ public class LocationActivity extends AppCompatActivity {
         }
     }
 
+    class locationInfo {
+        String averageRssi;
+        String scannedNum;
+        String greenNum;
+        String yellowNum;
+        String redNum;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
         setTitle(R.string.title_locations);
+
+        String[] locationInfoNames = getIntent().getStringArrayExtra("locationInfoNames");
+        locationInfo[] locationList = new locationInfo[locationInfoNames.length];
+        for (int i = 0; i < locationInfoNames.length; ++i)
+        {
+            String fileName = locationInfoNames[i];
+            SharedPreferences locationData = getSharedPreferences(fileName, 0);
+            locationInfo myLocation = new locationInfo();
+            myLocation.averageRssi = locationData.getString("average_rssi", "Null");
+            myLocation.scannedNum = locationData.getString("scanned_num", "Null");
+            myLocation.greenNum = locationData.getString("green_num", "Null");
+            myLocation.yellowNum = locationData.getString("yellow_num", "Null");
+            myLocation.redNum = locationData.getString("red_num", "Null");
+            locationList[i] = myLocation;
+        }
+
 
         locationView = findViewById(R.id.locations);
         locationView.setAdapter(new LocationAdapter());
@@ -85,6 +116,7 @@ public class LocationActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+
     }
 
     private void deleteLocations() {
