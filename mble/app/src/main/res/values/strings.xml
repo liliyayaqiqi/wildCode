@@ -37,5 +37,6 @@
     <string name="sample_unit">V</string>
     <string name="unknown_sn">The sensor\'s SN is not polled yet!</string>
     <string name="acquire_waveform">Acquire Waveform</string>
+    <string name="list_location">List Locations</string>
 
 </resources>
