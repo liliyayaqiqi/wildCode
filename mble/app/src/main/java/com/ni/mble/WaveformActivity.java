@@ -2,6 +2,7 @@ package com.ni.mble;
 
 import android.bluetooth.BluetoothDevice;
 import android.graphics.drawable.GradientDrawable;
+import android.media.tv.TvContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -21,6 +23,7 @@ import java.util.Random;
 public class WaveformActivity extends AppCompatActivity {
 
     private ListView channelListView;
+    private ProgressBar progressBar;
 
     class WaveformAdapter extends BaseAdapter {
         private double samples[][] = null;
@@ -122,5 +125,8 @@ public class WaveformActivity extends AppCompatActivity {
         }
         waveformAdapter.updateSamples(samples);
         waveformAdapter.notifyDataSetChanged();
+
+        progressBar = findViewById(R.id.acquire_progress);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 }
