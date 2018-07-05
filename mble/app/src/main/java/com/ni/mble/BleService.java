@@ -118,11 +118,11 @@ public class BleService extends Service {
         final Intent intent = new Intent(action);
 
         if (UUID_NI_MBLE_SN_READ.equals(characteristic.getUuid())) {
-            final byte[] data = Arrays.copyOfRange(characteristic.getValue(), 22, 25);
+            final byte[] data = Arrays.copyOfRange(characteristic.getValue(), 22, 26);
             if (data != null && data.length > 0) {
                 final StringBuilder stringBuilder = new StringBuilder(data.length);
                 for(byte byteChar : data)
-                    stringBuilder.append(String.format("%02X ", byteChar));
+                    stringBuilder.append(String.format("%02X-", byteChar));
                 intent.putExtra(SENSOR_ADDRESS, address);
                 intent.putExtra(SENSOR_SN, stringBuilder.toString());
             }

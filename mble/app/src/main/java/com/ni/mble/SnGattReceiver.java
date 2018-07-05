@@ -28,7 +28,7 @@ public class SnGattReceiver extends BroadcastReceiver {
     public void startReadingSn(String address) {
         Log.v(TAG,"startReadingSn");
         if(sensorRequestingSn != null) {
-            Log.v(TAG, "Service not NULL, return");
+            Log.v(TAG, "Address not NULL, return");
             return;
         }
         if(bleService != null && bleService.connect(address)) {

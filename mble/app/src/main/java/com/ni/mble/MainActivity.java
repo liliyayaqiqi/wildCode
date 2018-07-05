@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity{
                         public void run() {
                             if(Sensor.isDeviceOfInterest(scanRecord)) {
                                 Sensor sensor = new Sensor(device, rssi);
-                                sensorListAdapter.addSensor(sensor);
+                                sensor = sensorListAdapter.addSensor(sensor);
                                 if(sensor.getSn().equals(Sensor.UNKNOW_SN) && bleService != null && snGattReceiver != null) {
                                     if(bleService.connect(sensor.getAddress())) {
                                         snGattReceiver.startReadingSn(sensor.getAddress());

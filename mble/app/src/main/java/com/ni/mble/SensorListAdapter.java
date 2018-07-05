@@ -27,16 +27,17 @@ class SensorListAdapter extends BaseAdapter {
         mInflator = mainActivity.getLayoutInflater();
     }
 
-    public void addSensor(Sensor sensor) {
+    public Sensor addSensor(Sensor sensor) {
         if(!mSensors.containsKey(sensor.getAddress())) {
             //sensor.setSn("11-22-33-44");
             mSensors.put(sensor.getAddress(), sensor);
             mViewData.add(sensor);
         }
         else {
-            Sensor sensorItem = mSensors.get(sensor.getAddress());
-            sensorItem.updateRssi(sensor.getRssi());
+            sensor = mSensors.get(sensor.getAddress());
+            sensor.updateRssi(sensor.getRssi());
         }
+        return sensor;
     }
 
     public Map<String, Sensor> getSensors() {
