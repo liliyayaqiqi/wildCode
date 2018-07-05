@@ -73,6 +73,7 @@ class SensorListAdapter extends BaseAdapter {
             TextView deviceAddress;
             TextView deviceSn;
             TextView deviceRssi;
+            TextView timeStamp;
         }
 
         ViewHolder viewHolder;
@@ -84,6 +85,7 @@ class SensorListAdapter extends BaseAdapter {
             viewHolder.deviceName = view.findViewById(R.id.device_name);
             viewHolder.deviceRssi = view.findViewById(R.id.device_rssi);
             viewHolder.deviceSn = view.findViewById(R.id.device_sn);
+            viewHolder.timeStamp = view.findViewById(R.id.timeStamp);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -103,6 +105,7 @@ class SensorListAdapter extends BaseAdapter {
         else
             sn = mainActivity.getString(R.string.sn_title) + sn;
         viewHolder.deviceSn.setText(sn);
+        viewHolder.timeStamp.setText("Update:" + sensor.getTimeStamp());
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         int greenRssi = Integer.parseInt(prefs.getString("green_rssi", mainActivity.getString(R.string.default_green_rssi)));
