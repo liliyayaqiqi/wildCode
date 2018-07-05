@@ -20,6 +20,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -67,6 +69,14 @@ public class MainActivity extends AppCompatActivity{
 
         sensorsListView = findViewById(R.id.sensors);
 
+        sensorsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(MainActivity.this, WaveformActivity.class) { };
+                startActivity(intent);
+                return true;
+            }
+        });
         sensorListAdapter = new SensorListAdapter(this);
         sensorsListView.setAdapter(sensorListAdapter);
 
