@@ -103,8 +103,8 @@ class SensorListAdapter extends BaseAdapter {
         viewHolder.deviceAddress.setText(mainActivity.getString(R.string.addr_title) + sensor.getAddress());
         viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()) + mainActivity.getString(R.string.rssi_unit));
         String sn = sensor.getSn();
-        if (sn == null)
-            sn = mainActivity.getString(R.string.sn_title) + "xx-xx-xx-xx";
+        if (sn == Sensor.UNKNOW_SN)
+            sn = mainActivity.getString(R.string.sn_title) + " Polling...";
         else
             sn = mainActivity.getString(R.string.sn_title) + sn;
         viewHolder.deviceSn.setText(sn);
