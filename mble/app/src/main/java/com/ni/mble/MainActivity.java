@@ -384,6 +384,7 @@ public class MainActivity extends AppCompatActivity{
         editor.putString("red_num", String.valueOf(redNum));
         editor.commit();
         SharedPreferences.Editor locationEditor = allLocation.edit();
+        locationEditor.clear();
         locationEditor.putStringSet("locations1", locationInfo);
         locationEditor.commit();
     }
