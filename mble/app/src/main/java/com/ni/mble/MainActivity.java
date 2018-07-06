@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity{
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Sensor sensor = (Sensor)sensorListAdapter.getItem(i);
                 if (sensor.getSn().equals(Sensor.UNKNOW_SN)) {
-                    Toast.makeText(MainActivity.this, R.string.unknown_sn, Toast.LENGTH_LONG);
+                    Toast.makeText(MainActivity.this, R.string.unknown_sn, Toast.LENGTH_LONG).show();
                     return false;
                 }
                 Intent intent = new Intent(MainActivity.this, WaveformActivity.class) { };
