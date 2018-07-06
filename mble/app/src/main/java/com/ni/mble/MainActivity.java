@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity{
     static final String DEVICE_MAC_ID = "device_mac_id";
     static final String DEVICE_SN_ID = "device_sn_id";
 
-    Timestamp startScanTime;
+    private Timestamp startScanTime;
+    private String lastLocationName = "Location 1";
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView sensorsListView;
@@ -162,6 +163,13 @@ public class MainActivity extends AppCompatActivity{
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
             return;
+        }
+
+        SharedPreferences pref = getSharedPreferences("lastLocationName", 0);
+        lastLocationName = pref.getString("name", null);
+        if(lastLocationName == null)
+        {
+            lastLocationName = "Location 1";
         }
 
         SharedPreferences shareData = getSharedPreferences("devices", 0);
@@ -474,7 +482,7 @@ public class MainActivity extends AppCompatActivity{
 
     public  void initDialog() {
         final EditText et = new EditText(MainActivity.this);
-        et.setText("Location 1");
+        et.setText(lastLocationName);
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Location Info");
         builder.setIcon(R.mipmap.ic_launcher_round);
@@ -490,6 +498,13 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String input = et.getText().toString();
+                lastLocationName = input;
+                SharedPreferences pref = getSharedPreferences("lastLocationName", 0);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.clear();
+                editor.commit();
+                editor.putString("name", input);
+                editor.commit();
                 Toast.makeText(MainActivity.this, "Saved " + input, Toast.LENGTH_SHORT).show();
                 saveLocation(input);
             }
