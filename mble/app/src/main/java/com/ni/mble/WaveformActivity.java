@@ -217,12 +217,14 @@ public class WaveformActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        stopAcquireWaveform();
         unregisterReceiver(waveformReceiver);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopAcquireWaveform();
         unbindService(serviceConnection);
         bleService = null;
     }
