@@ -115,7 +115,8 @@ public class LocationActivity extends AppCompatActivity {
             int rssi = Integer.parseInt(info.averageRssi);
             int yellowNum = Integer.parseInt(info.yellowNum);
             int redNum = Integer.parseInt(info.redNum);
-            if(rssi >= greenRssi && yellowNum == 0 && redNum == 0){
+            int scannedNum = Integer.parseInt(info.scannedNum);
+            if(scannedNum == 0 || (rssi >= greenRssi && yellowNum == 0 && redNum == 0)){
                 int colors[] = {0xffffffff, 0xffffffff, 0xffffffff, 0x9f22bb55 };
                 GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
                 view.setBackground(gd);
