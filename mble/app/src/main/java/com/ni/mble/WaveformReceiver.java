@@ -99,7 +99,8 @@ public class WaveformReceiver extends BroadcastReceiver {
                         BluetoothGattCharacteristic characteristic = srv.getCharacteristic(configUuid);
                         characteristic.setValue(configData);
                         bleService.writeCharacteristic(characteristic);
-                        Toast.makeText(activity, "Start configuring waveform acquisition", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(activity, "Start configuring waveform acquisition", Toast.LENGTH_SHORT).show();
+                        activity.setText("Start configuring waveform acquisition");
                         return true;
                     }
                     if (currentStatus == RECONNECTED) {
@@ -116,7 +117,8 @@ public class WaveformReceiver extends BroadcastReceiver {
                         BluetoothGattCharacteristic characteristic = srv.getCharacteristic(transUuid);
                         characteristic.setValue(startTransferCmd);
                         bleService.writeCharacteristic(characteristic);
-                        Toast.makeText(activity, "Retrieving waveform data...", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(activity, "Retrieving waveform data...", Toast.LENGTH_SHORT).show();
+                        activity.setText("Retrieving waveform data...");
                         return true;
                     }
                     break;
@@ -130,7 +132,8 @@ public class WaveformReceiver extends BroadcastReceiver {
             final String action = intent.getAction();
             if(BleService.ACTION_GATT_CONNECTED.equals(action)) {
                 Log.v(TAG,"Connection established");
-                Toast.makeText(activity, "Remote enpoint is successfully connected!", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Remote enpoint is successfully connected!", Toast.LENGTH_SHORT).show();
+                //activity.setText("Remote enpoint is successfully connected!");
                 onConnected();
             } else if (BleService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 Log.v(TAG,"Services discovered");
@@ -144,7 +147,8 @@ public class WaveformReceiver extends BroadcastReceiver {
                 }
             } else if (BleService.ACTION_GATT_CONFIGURED.equals(action)) {
                 Log.v(TAG,"Gatt is configured");
-                Toast.makeText(activity, "Configuration accepted!", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Configuration accepted!", Toast.LENGTH_SHORT).show();
+                //activity.setText("Configuration accepted!");
                 if (bleService != null) {
                     for(BluetoothGattService srv: bleService.getSupportedGattServices()) {
                         if(srv.getUuid().toString().equals(GattAttributes.NI_MBLE_MEAS_SERVICE)) {
@@ -154,7 +158,8 @@ public class WaveformReceiver extends BroadcastReceiver {
                             characteristic.setValue(configStartCmd);
                             bleService.writeCharacteristic(characteristic);
                             Log.v(TAG,"Gatt Config start is written");
-                            Toast.makeText(activity, "Preparing waveform data...", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(activity, "Preparing waveform data...", Toast.LENGTH_SHORT).show();
+                            activity.setText("Preparing waveform data...");
                             currentStatus = WAITINGDISCONN;
                             break;
                         }
@@ -195,8 +200,9 @@ public class WaveformReceiver extends BroadcastReceiver {
                         //Log.v(TAG, "sample value is " + String.valueOf(sampleIndex / samplesPerChann) + " " + String.valueOf(sampleIndex % samplesPerChann) + " " + String.valueOf((double)tmp * 3.66211e-6));
                         i += 3;
                     }
+                    activity.setText("Waveform data collected!");
+                    Toast.makeText(activity, "Waveform data collected!", Toast.LENGTH_SHORT).show();
                     activity.updateSamples(samples);
-                    Toast.makeText(activity, "Waveform data collected!", Toast.LENGTH_LONG).show();
                     rawData.reset();
                 }
 
