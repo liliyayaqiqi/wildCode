@@ -26,6 +26,7 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -121,12 +122,34 @@ public class WaveformActivity extends AppCompatActivity {
             final String channelName = getString(R.string.channel_name) + " " + String.valueOf(i);
             viewHolder.channelName.setText(channelName);
             double channelSamples[] = samples[i];
-            double max = Double.MIN_VALUE;
+            if (samples[i].length > 10000) {
+                channelSamples =Arrays.copyOfRange(samples[i], 10000, samples[i].length);
+            }
+
+            double max = -Double.MAX_VALUE;
             double min = Double.MAX_VALUE;
             for (int s = 0; s < channelSamples.length; ++s) {
                 min = Math.min(min, channelSamples[s]);
                 max = Math.max(max, channelSamples[s]);
             }
+
+            double lastValue = Double.POSITIVE_INFINITY;
+            for (int s = 0; s < channelSamples.length; ++s) {
+                if (lastValue != Double.POSITIVE_INFINITY) {
+                    if (Math.abs(channelSamples[s] - lastValue) >= 0.5 * (max - min)) {
+                        channelSamples[s] = lastValue;
+                    }
+                }
+                lastValue = channelSamples[s];
+            }
+
+            max = -Double.MAX_VALUE;
+            min = Double.MAX_VALUE;
+            for (int s = 0; s < channelSamples.length; ++s) {
+                min = Math.min(min, channelSamples[s]);
+                max = Math.max(max, channelSamples[s]);
+            }
+
             final String channelMax = getString(R.string.channel_max) + " " + String.format("%4.2e", max) + getString(R.string.sample_unit);
             final String channelMin = getString(R.string.channel_min) + " " + String.format("%4.2e", min) + getString(R.string.sample_unit);
 
@@ -159,13 +182,12 @@ public class WaveformActivity extends AppCompatActivity {
         channelListView.setAdapter(waveformAdapter);
 
         double samples[][] = new double[12][];
-        Random rand = new Random();
+        //Random rand = new Random();
         for (int i = 0; i < samples.length; ++i) {
-            double low = (double)(rand.nextInt(10) * 10);
             double channelSamples[] = new double[10000];
             samples[i] = channelSamples;
             for (int j = 0; j < channelSamples.length; ++j) {
-                channelSamples[j] = low + Math.random() * 10.0;
+                channelSamples[j] = 0;
             }
         }
         waveformAdapter.updateSamples(samples);
@@ -213,6 +235,12 @@ public class WaveformActivity extends AppCompatActivity {
     public void updateSamples(double[][] samples) {
         waveformAdapter.updateSamples(samples);
         waveformAdapter.notifyDataSetChanged();
+        stopAcquireWaveform();
+    }
+
+    public void updateProgress(int progress) {
+        progressBar.setProgress(progress);
+        waveformAdapter.notifyDataSetChanged();
     }
 
     private static IntentFilter makeGattUpdateIntentFilter() {
@@ -227,6 +255,11 @@ public class WaveformActivity extends AppCompatActivity {
     private void startAcquireWaveform() {
         progressBar.setVisibility(View.VISIBLE);
         bleService.connect(address);
+    }
+
+    private void stopAcquireWaveform() {
+        progressBar.setVisibility(View.INVISIBLE);
+        bleService.disconnect();
     }
 
     @Override
