@@ -30,12 +30,22 @@
     <string name="addr_title">MAC:</string>
     <string name="rssi_unit">dBm</string>
     <string name="sn_title">SN:</string>
+    <string name="module_title">Module:</string>
+
 
     <string name="channel_name">Channel</string>
     <string name="channel_max">max</string>
     <string name="channel_min">min</string>
     <string name="sample_unit">V</string>
     <string name="unknown_sn">The sensor\'s SN is not polled yet!</string>
+    <string name="acquire_waveform">Acquire Waveform</string>
+    <string name="list_location">List Locations</string>
+    <string name="title_locations">Locations</string>
+    <string name="location_summary">Summary</string>
+    <string name="location_scanned">scanned</string>
+    <string name="location_green">green</string>
+    <string name="location_yellow">yellow</string>
+    <string name="location_red">red</string>
+    <string name="location_rssi">Average RSSI:</string>
 
->>>>>>> task_waveform
 </resources>

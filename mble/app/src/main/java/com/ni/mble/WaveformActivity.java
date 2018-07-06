@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,6 @@ public class WaveformActivity extends AppCompatActivity {
                 finish();
             }
             waveformReceiver.setBleService(bleService);
-            bleService.connect(address);
         }
 
         @Override
@@ -199,10 +199,13 @@ public class WaveformActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.id.menu_acquire_waveforme:
+                startAcquireWaveform();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -221,4 +224,15 @@ public class WaveformActivity extends AppCompatActivity {
         intentFilter.addAction(BleService.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
+    private void startAcquireWaveform() {
+        progressBar.setVisibility(View.VISIBLE);
+        bleService.connect(address);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.waveform_menu, menu);
+        return true;
+    }
+
 }

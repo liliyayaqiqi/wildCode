@@ -72,7 +72,7 @@ class SensorListAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         class ViewHolder {
-            TextView deviceName;
+            TextView deviceModule;
             TextView deviceAddress;
             TextView deviceSn;
             TextView deviceRssi;
@@ -85,7 +85,7 @@ class SensorListAdapter extends BaseAdapter {
             view = mInflator.inflate(R.layout.sensor, null);
             viewHolder = new ViewHolder();
             viewHolder.deviceAddress = view.findViewById(R.id.device_address);
-            viewHolder.deviceName = view.findViewById(R.id.device_name);
+            viewHolder.deviceModule = view.findViewById(R.id.device_module);
             viewHolder.deviceRssi = view.findViewById(R.id.device_rssi);
             viewHolder.deviceSn = view.findViewById(R.id.device_sn);
             viewHolder.timeStamp = view.findViewById(R.id.timeStamp);
@@ -97,18 +97,18 @@ class SensorListAdapter extends BaseAdapter {
         Sensor sensor = mViewData.get(i);
         final String deviceName = sensor.getName();
         if (deviceName != null && deviceName.length() > 0)
-            viewHolder.deviceName.setText(deviceName);
+            viewHolder.deviceModule.setText(mainActivity.getString(R.string.module_title) + deviceName);
         else
-            viewHolder.deviceName.setText(R.string.unknown_sensor);
+            viewHolder.deviceModule.setText(mainActivity.getString(R.string.module_title) + R.string.unknown_sensor);
         viewHolder.deviceAddress.setText(mainActivity.getString(R.string.addr_title) + sensor.getAddress());
         viewHolder.deviceRssi.setText(String.valueOf(sensor.getRssi()) + mainActivity.getString(R.string.rssi_unit));
         String sn = sensor.getSn();
-        if (sn == Sensor.UNKNOW_SN)
+        if (sn.equals(Sensor.UNKNOW_SN))
             sn = mainActivity.getString(R.string.sn_title) + " Polling...";
         else
             sn = mainActivity.getString(R.string.sn_title) + sn;
         viewHolder.deviceSn.setText(sn);
-        viewHolder.timeStamp.setText("Update:" + sensor.getTimeStamp());
+        viewHolder.timeStamp.setText(sensor.getTimeStamp());
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         int greenRssi = Integer.parseInt(prefs.getString("green_rssi", mainActivity.getString(R.string.default_green_rssi)));

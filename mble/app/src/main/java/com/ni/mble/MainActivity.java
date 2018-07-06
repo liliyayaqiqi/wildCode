@@ -122,8 +122,8 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Sensor sensor = (Sensor)sensorListAdapter.getItem(i);
-                if (sensor.getSn() == null) {
-                    Toast.makeText(MainActivity.this, R.string.unknown_sn, Toast.LENGTH_LONG);
+                if (sensor.getSn().equals(Sensor.UNKNOW_SN)) {
+                    Toast.makeText(MainActivity.this, R.string.unknown_sn, Toast.LENGTH_LONG).show();
                     return false;
                 }
                 Intent intent = new Intent(MainActivity.this, WaveformActivity.class) { };
@@ -167,12 +167,18 @@ public class MainActivity extends AppCompatActivity{
             {
                 String serial_num = data.substring(0, 11);
                 String mac_addr = data.substring(11, 28);
-                String device_name = data.substring(28);
+                String timestamp = data.substring(28, 47);
+                String device_name = data.substring(47, 56);
+                String rssi = data.substring(56);
+                if (rssi.equalsIgnoreCase(""))
+                {
+                    rssi = "-80";
+                }
                 if (device_name.equalsIgnoreCase("null"))
                 {
                     device_name = "Unknown Sensor";
                 }
-                Sensor sensor = new Sensor(device_name, mac_addr, serial_num);
+                Sensor sensor = new Sensor(device_name, mac_addr, serial_num, timestamp, rssi);
                 sensorListAdapter.addSensor(sensor);
                 sensorListAdapter.notifyDataSetChanged();
             }
@@ -202,9 +208,10 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.menu_settings:
-                Intent intent = new Intent(this, SettingsActivity.class){};
+                intent = new Intent(this, SettingsActivity.class){};
                 startActivity(intent);
                 return true;
             case R.id.menu_delete_all:
@@ -221,6 +228,10 @@ public class MainActivity extends AppCompatActivity{
                     initDialog();
                 }
                 return true;
+            case R.id.menu_list_location:
+                intent = new Intent(this, LocationActivity.class) {};
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -234,9 +245,6 @@ public class MainActivity extends AppCompatActivity{
         scanPeriod = Integer.parseInt(prefs.getString("scan_period", getString(R.string.default_scan_period)));
 
         tryGainPermissions();
-
-
-
     }
 
     @Override
@@ -340,10 +348,8 @@ public class MainActivity extends AppCompatActivity{
         for (int i = 0; i < sensor_count; ++i)
         {
             Sensor sensor = (Sensor) sensorListAdapter.getItem(i);
-            String data = sensor.getSn() + sensor.getAddress() + sensor.getName();
+            String data = sensor.getSn() + sensor.getAddress() + sensor.getTimeStamp() + sensor.getName() + sensor.getRssi();
             editor.putString(String.valueOf(i), data);
-            Log.v(TAG, sensor.getSn());
-            Log.v(TAG, sensor.getAddress());
             editor.commit();
         }
         updateLocationInfo();
@@ -368,6 +374,9 @@ public class MainActivity extends AppCompatActivity{
         editor.putString("yellow_num", String.valueOf(yellowNum));
         editor.putString("red_num", String.valueOf(redNum));
         editor.commit();
+        SharedPreferences allLocation = getSharedPreferences("locations", 0);
+        SharedPreferences.Editor locationEditor = allLocation.edit();
+        locationEditor.putStringSet("locations", locationInfo);
     }
 
     private void updateLocationInfo() {
@@ -396,7 +405,14 @@ public class MainActivity extends AppCompatActivity{
                 ++redNum;
             }
         }
-        averageRssi = totalRssi/sensor_count;
+        if (sensor_count > 0)
+        {
+            averageRssi = totalRssi/sensor_count;
+        }
+        else
+        {
+            averageRssi = -80;
+        }
         scannedNum = sensor_count;
     }
 
