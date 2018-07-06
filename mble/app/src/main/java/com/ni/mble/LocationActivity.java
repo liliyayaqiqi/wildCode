@@ -19,6 +19,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,16 +39,16 @@ public class LocationActivity extends AppCompatActivity {
 
     class LocationAdapter extends BaseAdapter {
         private LayoutInflater inflater;
-        private LocationInfo locationInfos[];
+        private ArrayList<LocationInfo> locationInfos;
 
         public LocationAdapter(LocationInfo locationInfos[]) {
             super();
             inflater = LocationActivity.this.getLayoutInflater();
-            this.locationInfos = locationInfos;
+            this.locationInfos = new ArrayList<>(Arrays.asList(locationInfos));
         }
 
         public void clear(){
-            locationInfos = null;
+            locationInfos.clear();
         }
 
         @Override
@@ -54,12 +56,12 @@ public class LocationActivity extends AppCompatActivity {
             if (locationInfos == null) {
                 return 0;
             }
-            return locationInfos.length;
+            return locationInfos.size();
         }
 
         @Override
         public Object getItem(int i) {
-            return locationInfos[i];
+            return locationInfos.get(i);
         }
 
         @Override
@@ -88,7 +90,7 @@ public class LocationActivity extends AppCompatActivity {
             } else {
                 viewHolder = (ViewHolder) view.getTag();
             }
-            LocationInfo info = locationInfos[i];
+            LocationInfo info = locationInfos.get(i);
             viewHolder.locationName.setText(info.name);
 
             String eol = System.getProperty("line.separator");
@@ -156,13 +158,14 @@ public class LocationActivity extends AppCompatActivity {
         }
 
         locationView = findViewById(R.id.locations);
-        locationView.setAdapter(new LocationAdapter(locationList));
+        locationAdapter = new LocationAdapter(locationList);
+        locationView.setAdapter(locationAdapter);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setHomeAsUpIndicator(R.drawable.ic_home);
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
         }
     }
 
@@ -181,12 +184,12 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void deleteLocations() {
-        locationAdapter.clear();
-        locationAdapter.notifyDataSetChanged();
         SharedPreferences allLocations = getSharedPreferences("locations", 0);
         SharedPreferences.Editor editor = allLocations.edit();
         editor.clear();
         editor.commit();
+        locationAdapter.clear();
+        locationAdapter.notifyDataSetChanged();
     }
 
     @Override
