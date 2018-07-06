@@ -32,6 +32,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.sql.Timestamp;
@@ -42,6 +46,8 @@ public class MainActivity extends AppCompatActivity{
     private static final int REQUEST_LOCATION_PERMISSIONS = 2;
     static final String DEVICE_MAC_ID = "device_mac_id";
     static final String DEVICE_SN_ID = "device_sn_id";
+
+    Timestamp startScanTime;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView sensorsListView;
@@ -393,19 +399,32 @@ public class MainActivity extends AppCompatActivity{
         for (int i = 0; i < sensor_count; ++i)
         {
             Sensor sensor = (Sensor) sensorListAdapter.getItem(i);
-            int rssi = sensor.getRssi();
-            totalRssi += rssi;
-            if (rssi >= greenRssi)
+            String sensorTime = sensor.getTimeStamp();
+            Timestamp updateTime;
+            if (!sensorTime.equalsIgnoreCase(""))
             {
-                ++greenNum;
-            }
-            else if (rssi >= yellowRssi)
-            {
-                ++yellowNum;
-            }
-            else
-            {
-                ++redNum;
+                updateTime = sensor.getRawTimestamp();
+                if (updateTime != null)
+                {
+                    if (updateTime.after(startScanTime))
+                    {
+                        ++scannedNum;
+                        int rssi = sensor.getRssi();
+                        totalRssi += rssi;
+                        if (rssi >= greenRssi)
+                        {
+                            ++greenNum;
+                        }
+                        else if (rssi >= yellowRssi)
+                        {
+                            ++yellowNum;
+                        }
+                        else
+                        {
+                            ++redNum;
+                        }
+                    }
+                }
             }
         }
         if (sensor_count > 0)
@@ -416,7 +435,7 @@ public class MainActivity extends AppCompatActivity{
         {
             averageRssi = -80;
         }
-        scannedNum = sensor_count;
+        //scannedNum = sensor_count;
     }
 
     private void resetLocationInfo(){
@@ -438,6 +457,7 @@ public class MainActivity extends AppCompatActivity{
         };
         isScanning = true;
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        startScanTime = currentTime;
         scanStopTarget = currentTime.getTime() + scanPeriod * 1000;
         handler.postDelayed(runnable, scanPeriod * 1000); // TODO: Need to be configured;
         bluetoothAdapter.startLeScan(leScanCallback);
