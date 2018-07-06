@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".WaveformActivity">
 
+    <TextView
+        android:id="@+id/waveform_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="3dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acquire_progress" />
+
 
     <ProgressBar
         android:id="@+id/acquire_progress"
@@ -27,6 +37,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/waveform_status" >
         app:layout_constraintTop_toTopOf="parent" >
 
     </ListView>
