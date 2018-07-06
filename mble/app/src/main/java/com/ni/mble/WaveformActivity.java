@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.drawable.GradientDrawable;
 import android.media.tv.TvContract;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -36,6 +37,7 @@ public class WaveformActivity extends AppCompatActivity {
 
     private ListView channelListView;
     private ProgressBar progressBar;
+    private TextView status;
     private String sn;
     private String address;
 
@@ -181,7 +183,7 @@ public class WaveformActivity extends AppCompatActivity {
         waveformAdapter = new WaveformAdapter();
         channelListView.setAdapter(waveformAdapter);
 
-        double samples[][] = new double[12][];
+        /*double samples[][] = new double[12][];
         //Random rand = new Random();
         for (int i = 0; i < samples.length; ++i) {
             double channelSamples[] = new double[10000];
@@ -191,13 +193,19 @@ public class WaveformActivity extends AppCompatActivity {
             }
         }
         waveformAdapter.updateSamples(samples);
-        waveformAdapter.notifyDataSetChanged();
+        waveformAdapter.notifyDataSetChanged();*/
+
+        status = findViewById(R.id.waveform_status);
 
         progressBar = findViewById(R.id.acquire_progress);
         progressBar.setVisibility(View.INVISIBLE);
 
         Intent gattServiceIntent = new Intent(this, BleService.class);
         bindService(gattServiceIntent, serviceConnection, BIND_AUTO_CREATE);
+    }
+
+    public void setText(final String text) {
+        status.setText(text);
     }
 
     @Override
@@ -233,12 +241,14 @@ public class WaveformActivity extends AppCompatActivity {
     }
 
     public void updateSamples(double[][] samples) {
+        setText("Collected Waveform:");
         waveformAdapter.updateSamples(samples);
         waveformAdapter.notifyDataSetChanged();
         stopAcquireWaveform();
     }
 
     public void updateProgress(int progress) {
+        progressBar.setVisibility(View.VISIBLE);
         progressBar.setProgress(progress);
         waveformAdapter.notifyDataSetChanged();
     }
@@ -253,7 +263,6 @@ public class WaveformActivity extends AppCompatActivity {
         return intentFilter;
     }
     private void startAcquireWaveform() {
-        progressBar.setVisibility(View.VISIBLE);
         bleService.connect(address);
     }
 
