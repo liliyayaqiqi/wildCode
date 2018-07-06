@@ -232,7 +232,14 @@ public class MainActivity extends AppCompatActivity{
             case R.id.menu_save_location:
                 if (sensorListAdapter.getCount()>0)
                 {
-                    initDialog();
+                    if (scannedNum == 0)
+                    {
+                        Toast.makeText(MainActivity.this, "No scanned spider to save", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        initDialog();
+                    }
                 }
                 return true;
             case R.id.menu_list_location:
@@ -384,6 +391,7 @@ public class MainActivity extends AppCompatActivity{
         editor.putString("red_num", String.valueOf(redNum));
         editor.commit();
         SharedPreferences.Editor locationEditor = allLocation.edit();
+        locationEditor.clear();
         locationEditor.putStringSet("locations1", locationInfo);
         locationEditor.commit();
     }
@@ -456,6 +464,7 @@ public class MainActivity extends AppCompatActivity{
             }
         };
         isScanning = true;
+        sensorListAdapter.resetScan();
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         startScanTime = currentTime;
         scanStopTarget = currentTime.getTime() + scanPeriod * 1000;

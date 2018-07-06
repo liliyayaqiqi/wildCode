@@ -30,6 +30,11 @@ class SensorListAdapter extends BaseAdapter {
         mInflator = mainActivity.getLayoutInflater();
     }
 
+    public void resetScan() {
+        for (Sensor sensor : mViewData) {
+            sensor.resetScan();
+        }
+    }
     public Sensor addSensor(Sensor sensor) {
         if(!mSensors.containsKey(sensor.getAddress())) {
             //sensor.setSn("11-22-33-44");
