@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class SnGattReceiver extends BroadcastReceiver {
-    private final static String TAG = BroadcastReceiver.class.getSimpleName();
+    private final static String TAG = SnGattReceiver.class.getSimpleName();
     private SensorListAdapter sensorList;
     private BleService bleService;
     private String sensorRequestingSn;
