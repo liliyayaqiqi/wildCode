@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -151,6 +152,13 @@ public class LocationActivity extends AppCompatActivity {
 
         locationView = findViewById(R.id.locations);
         locationView.setAdapter(new LocationAdapter(locationList));
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_home);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
