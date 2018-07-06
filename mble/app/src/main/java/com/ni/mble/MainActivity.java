@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity{
                 {
                     if (scannedNum == 0)
                     {
-                        Toast.makeText(MainActivity.this, "No scanned spider to save", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Please swipe to scan before saving location", Toast.LENGTH_SHORT).show();
                     }
                     else
                     {
