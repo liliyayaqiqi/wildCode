@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ni.mble"
-    android:versionName="@string/app_version_name">
+    android:versionName="@string/app_version_name"
+    android:versionCode="2">
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
