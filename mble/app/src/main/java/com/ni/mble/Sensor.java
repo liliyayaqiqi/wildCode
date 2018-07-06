@@ -11,11 +11,18 @@ import java.time.Instant;
 class Sensor {
     public final static String UNKNOW_SN = "00 00 00 00";
     private BluetoothDevice mDevice;
+    private int mTotalRssi = 0;
+    private int mTotalScans = 0;
     private int mRssi;
     private String mName;
     private String mAddress;
     private String mSn;
     private String mTimeStamp;
+
+    public void resetScan() {
+        mTotalRssi = 0;
+        mTotalScans = 0;
+    }
 
     public static boolean isDeviceOfInterest(byte[] scanRecord) {
         final int MANUFACTURER_DATA = 0xFF;
@@ -72,7 +79,9 @@ class Sensor {
     }
 
     public void updateRssi(int rssi) {
-        mRssi = rssi;
+        ++mTotalScans;
+        mTotalRssi += rssi;
+        mRssi = mTotalRssi / mTotalScans;
         mTimeStamp = getTime();
     }
 

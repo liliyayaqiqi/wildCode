@@ -437,6 +437,7 @@ public class MainActivity extends AppCompatActivity{
             }
         };
         isScanning = true;
+        sensorListAdapter.resetScan();
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         scanStopTarget = currentTime.getTime() + scanPeriod * 1000;
         handler.postDelayed(runnable, scanPeriod * 1000); // TODO: Need to be configured;
