@@ -3,6 +3,7 @@ package com.ni.mble;
 import android.bluetooth.BluetoothDevice;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import java.sql.Timestamp;
@@ -14,6 +15,7 @@ class Sensor {
     private int mTotalRssi = 0;
     private int mTotalScans = 0;
     private int mRssi;
+    private Timestamp mRawTimestamp;
     private String mName;
     private String mAddress;
     private String mSn;
@@ -99,11 +101,16 @@ class Sensor {
         return mDevice;
     }
 
+    public Timestamp getRawTimestamp(){
+        return mRawTimestamp;
+    }
     public String getTimeStamp(){
         return mTimeStamp;
     }
     private String getTime(){
         SimpleDateFormat dataFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        return dataFormat.format(new java.util.Date(System.currentTimeMillis()));
+        Date date = new java.util.Date(System.currentTimeMillis());
+        mRawTimestamp = new Timestamp(date.getTime());
+        return dataFormat.format(date);
     }
 }
