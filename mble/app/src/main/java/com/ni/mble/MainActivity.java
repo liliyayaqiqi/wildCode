@@ -232,7 +232,14 @@ public class MainActivity extends AppCompatActivity{
             case R.id.menu_save_location:
                 if (sensorListAdapter.getCount()>0)
                 {
-                    initDialog();
+                    if (scannedNum == 0)
+                    {
+                        Toast.makeText(MainActivity.this, "No scanned spider to save", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        initDialog();
+                    }
                 }
                 return true;
             case R.id.menu_list_location:
