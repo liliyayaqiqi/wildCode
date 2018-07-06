@@ -48,4 +48,7 @@
     <string name="location_red">red</string>
     <string name="location_rssi">Average RSSI:</string>
 
+    <string name="splash_title">NI Bluetooth Sensor</string>
+    <string name="version">version 1.0</string>
+
 </resources>
