@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity{
             }
             ++i;
         }
+        updateLocationInfo();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -357,6 +358,8 @@ public class MainActivity extends AppCompatActivity{
 
     private void saveLocation(String locationName)
     {
+        SharedPreferences allLocation = getSharedPreferences("locations", 0);
+        locationInfo = allLocation.getStringSet("locations1", new HashSet<String>());
         SharedPreferences shareData = getSharedPreferences(locationName, 0);
         SharedPreferences.Editor editor = shareData.edit();
         if(locationInfo.contains(locationName))
@@ -374,9 +377,9 @@ public class MainActivity extends AppCompatActivity{
         editor.putString("yellow_num", String.valueOf(yellowNum));
         editor.putString("red_num", String.valueOf(redNum));
         editor.commit();
-        SharedPreferences allLocation = getSharedPreferences("locations", 0);
         SharedPreferences.Editor locationEditor = allLocation.edit();
-        locationEditor.putStringSet("locations", locationInfo);
+        locationEditor.putStringSet("locations1", locationInfo);
+        locationEditor.commit();
     }
 
     private void updateLocationInfo() {

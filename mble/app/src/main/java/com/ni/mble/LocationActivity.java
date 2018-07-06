@@ -21,6 +21,7 @@ import java.util.Set;
 
 public class LocationActivity extends AppCompatActivity {
     private ListView locationView;
+    private LocationAdapter locationAdapter;
 
     class LocationInfo {
         String name;
@@ -33,12 +34,16 @@ public class LocationActivity extends AppCompatActivity {
 
     class LocationAdapter extends BaseAdapter {
         private LayoutInflater inflater;
-        private final LocationInfo locationInfos[];
+        private LocationInfo locationInfos[];
 
         public LocationAdapter(LocationInfo locationInfos[]) {
             super();
             inflater = LocationActivity.this.getLayoutInflater();
             this.locationInfos = locationInfos;
+        }
+
+        public void clear(){
+            locationInfos = null;
         }
 
         @Override
@@ -107,7 +112,7 @@ public class LocationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_location);
         setTitle(R.string.title_locations);
         SharedPreferences allLocations = getSharedPreferences("locations", 0);
-        Set<String> locationInfoNamesSet = allLocations.getStringSet("locations", new HashSet<String>());
+        Set<String> locationInfoNamesSet = allLocations.getStringSet("locations1", new HashSet<String>());
         String[] locationInfoNames = locationInfoNamesSet.toArray(new String[locationInfoNamesSet.size()]);
         LocationInfo[] locationList = new LocationInfo[locationInfoNamesSet.size()];
         for (int i = 0; i < locationInfoNames.length; ++i)
@@ -125,7 +130,8 @@ public class LocationActivity extends AppCompatActivity {
         }
 
         locationView = findViewById(R.id.locations);
-        locationView.setAdapter(new LocationAdapter(locationList));
+        locationAdapter = new LocationAdapter(locationList);
+        locationView.setAdapter(locationAdapter);
     }
 
     @Override
@@ -143,6 +149,12 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void deleteLocations() {
+        locationAdapter.clear();
+        locationAdapter.notifyDataSetChanged();
+        SharedPreferences allLocations = getSharedPreferences("locations", 0);
+        SharedPreferences.Editor editor = allLocations.edit();
+        editor.clear();
+        editor.commit();
     }
 
     @Override
