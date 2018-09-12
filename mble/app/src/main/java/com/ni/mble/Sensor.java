@@ -20,6 +20,7 @@ class Sensor {
     private String mAddress;
     private String mSn;
     private String mTimeStamp;
+    final private static int MANUFACTURER_DATA = 0xFF;
 
     public void resetScan() {
         mTotalRssi = 0;
@@ -27,7 +28,6 @@ class Sensor {
     }
 
     public static boolean isDeviceOfInterest(byte[] scanRecord) {
-        final int MANUFACTURER_DATA = 0xFF;
         int startIdx = 0;
         while(startIdx < scanRecord.length) {
             int record = scanRecord[startIdx] & 0xFF;
@@ -43,6 +43,28 @@ class Sensor {
             ++startIdx;
         }
         return false;
+    }
+    public static String parseSn(byte[] niScanRecord) {
+        final int SN_MSD_LEN = 9;
+        int startIdx = 0;
+        while(startIdx < niScanRecord.length) {
+            int len = niScanRecord[startIdx];
+            if (len == 0) {
+                break;
+            }
+            int type = niScanRecord[startIdx + 1] & 0xFF;
+            if(type == MANUFACTURER_DATA && len == SN_MSD_LEN) {
+                String sn = new String();
+                sn += String.format("%02X", niScanRecord[startIdx + SN_MSD_LEN]);
+                sn += String.format("%02X", niScanRecord[startIdx + SN_MSD_LEN - 1]);
+                sn += String.format("%02X", niScanRecord[startIdx + SN_MSD_LEN - 2]);
+                sn += String.format("%02X", niScanRecord[startIdx + SN_MSD_LEN - 3]);
+                return sn;
+            }
+
+            startIdx += (len + 1);
+        }
+        return UNKNOW_SN;
     }
 
     public Sensor(final BluetoothDevice device, int rssi) {

@@ -33,12 +33,23 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.sql.Timestamp;
+
+
+class tDevice {
+    String serial_num;
+    String mac_addr;
+    String timestamp;
+    String device_name;
+    String rssi;
+}
 
 public class MainActivity extends AppCompatActivity{
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -103,9 +114,7 @@ public class MainActivity extends AppCompatActivity{
                                 Sensor sensor = new Sensor(device, rssi);
                                 Log.v(TAG, "device found " + device.getAddress() + " "  + String.valueOf(rssi));
                                 sensor = sensorListAdapter.addSensor(sensor);
-                                if(sensor.getSn().equals(Sensor.UNKNOW_SN) && bleService != null && snGattReceiver != null) {
-                                    snGattReceiver.startReadingSn(sensor.getAddress());
-                                }
+                                sensor.setSn(Sensor.parseSn(scanRecord));
                                 sensorListAdapter.notifyDataSetChanged();
                             }
                         }
@@ -179,11 +188,13 @@ public class MainActivity extends AppCompatActivity{
             String data = shareData.getString(String.valueOf(i), "Null");
             if (data != "Null")
             {
-                String serial_num = data.substring(0, 11);
-                String mac_addr = data.substring(11, 28);
-                String timestamp = data.substring(28, 47);
-                String device_name = data.substring(47, 56);
-                String rssi = data.substring(56);
+                Gson gson = new Gson();
+                tDevice device = gson.fromJson(data, tDevice.class);
+                String serial_num = device.serial_num;
+                String mac_addr = device.mac_addr;
+                String timestamp = device.timestamp;
+                String device_name = device.device_name;
+                String rssi = device.rssi;
                 if (rssi.equalsIgnoreCase(""))
                 {
                     rssi = "-80";
@@ -370,7 +381,14 @@ public class MainActivity extends AppCompatActivity{
         for (int i = 0; i < sensor_count; ++i)
         {
             Sensor sensor = (Sensor) sensorListAdapter.getItem(i);
-            String data = sensor.getSn() + sensor.getAddress() + sensor.getTimeStamp() + sensor.getName() + sensor.getRssi();
+            Gson gson = new Gson();
+            tDevice device = new tDevice();
+            device.device_name = sensor.getName();
+            device.mac_addr = sensor.getAddress();
+            device.serial_num = sensor.getSn();
+            device.rssi = Integer.toString(sensor.getRssi());
+            device.timestamp = sensor.getTimeStamp();
+            String data = gson.toJson(device);
             editor.putString(String.valueOf(i), data);
             editor.commit();
         }
